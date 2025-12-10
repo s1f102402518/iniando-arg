@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ room.name }}</title>
+</head>
+<body>
+    <h1>{{ room.name }}</h1>
+
+    <h2>参加者</h2>
+    <ul>
+        {% for m in members %}
+            <li>{{ m.nickname }}</li>
+        {% endfor %}
+    </ul>
+
+    {% if members.first.nickname == "Host" %}
+    <a href="/room/{{ room.id }}/delete/">部屋削除</a>
+    {% endif %}
+
+    <br><br>
+    <a href="/">ロビーへ戻る</a>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Lobby</title>
+</head>
+<body>
+    <h1>鴉ヶ丘大学掲示板調査案件</h1>
+
+    <h3>調査依頼書</h3>
+    <h4>依頼人情報</h4>
+    <ul>
+        <li>匿名希望</li>
+        <li>鴉ヶ丘大学学生</li>
+    </ul>
+    <h4>依頼日</h4>
+    <p>{{ yesterday }}</p>
+    <h4>調査依頼内容</h4>
+    <li>大学掲示板の調査</li>
+    <h4>背景</h4>
+    <p>依頼者が大学掲示板を利用していたところ不審な所が散見された。単独での調査は不可能と考え依頼。</p>
+    <h4>調査方法</h4>
+    <p>３人一組で調査にあたってもらう。既存グループに参加するか、新たにグループを設立するように。</p>
+    
+
+    <form method="GET" action="">
+        <input type="text" name="q" placeholder="部屋名 または ID 検索">
+        <button type="submit">検索</button>
+    </form>
+
+    <form method="POST" action="/create/">
+        {% csrf_token %}
+        <input type="text" name="name" placeholder="部屋名">
+        <button type="submit">部屋作成</button>
+    </form>
+
+    <h2>現在募集中の調査グループ</h2>
+    <ul>
+        {% for room in rooms %}
+            <li>
+                {{ room.name }} ({{ room.entries.count }} / 3)
+                <a href="/room/{{ room.id }}/">参加</a>
+            </li>
+        {% empty %}
+            <li>募集中の部屋はありません</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

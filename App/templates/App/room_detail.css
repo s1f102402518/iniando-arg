@@ -1,0 +1,30 @@
+/* --- room_detail.css --- */
+
+body {
+    background: #f3f5f7;
+    font-family: "MS PGothic", sans-serif;
+}
+
+.container {
+    width: 800px;
+    margin: 30px auto;
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #aaa;
+}
+
+.member-list {
+    margin-top: 20px;
+    padding: 10px;
+    background: #f9f9f9;
+    border: 1px dotted #bbb;
+}
+
+.name {
+    padding: 5px 0;
+}
+
+.full {
+    color: red;
+    font-weight: bold;
+}

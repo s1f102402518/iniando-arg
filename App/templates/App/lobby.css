@@ -1,0 +1,47 @@
+/* --- lobby.css (ロビー / スレ立て画面) --- */
+
+body {
+    background: #eef2f5;
+    font-family: "MS PGothic", sans-serif;
+}
+
+.container {
+    width: 800px;
+    margin: 30px auto;
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #aaa;
+}
+
+.thread-list {
+    margin-top: 20px;
+    list-style: none;
+    padding: 0;
+}
+
+.thread {
+    padding: 6px 0;
+    border-bottom: 1px dotted #ccc;
+}
+
+.thread a {
+    color: #0040ff;
+    text-decoration: none;
+}
+
+.count {
+    margin-left: 10px;
+    color: #555;
+}
+
+.date {
+    float: right;
+    color: #777;
+    font-size: 12px;
+}
+
+.create-form {
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
