@@ -1,0 +1,114 @@
+body {
+    /* フォントと基本的な背景の設定 */
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9; /* わずかに灰色がかった背景 */
+    color: #333;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center; /* 中央寄せ */
+    align-items: flex-start; /* 上部から配置 */
+    min-height: 100vh;
+}
+
+h1 {
+    /* 見出しのスタイル */
+    color: #0056b3; /* ブランドカラーのような濃い青 */
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+form {
+    /* フォームコンテナのスタイル */
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 軽い影で立体感を出す */
+    width: 100%;
+    max-width: 400px; /* フォームの最大幅を設定 */
+}
+
+p {
+    /* エラーメッセージやリンクを含む段落のスタイル */
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+/* エラーメッセージのスタイル (Djangoの form.errors に対応) */
+p:first-child:not(:has(a)) {
+    color: #d9534f; /* 赤系の色 */
+    background-color: #f2dede;
+    border: 1px solid #ebccd1;
+    padding: 10px;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* form.as_p でレンダリングされる p タグ内の要素 */
+form p {
+    margin-bottom: 20px;
+}
+
+/* ラベルと入力フィールドの配置調整 */
+label {
+    display: block; /* ラベルをブロック要素にして一行専有させる */
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+input[type="text"],
+input[type="password"] {
+    /* テキスト入力フィールドとパスワード入力フィールドのスタイル */
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    box-sizing: border-box; /* paddingとborderをwidthに含める */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.3s;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+    /* フォーカス時のスタイル */
+    border-color: #007bff; /* 青色に変化 */
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+}
+
+input[type="submit"] {
+    /* ログインボタンのスタイル */
+    background-color: #007bff; /* 主要なボタンの色 */
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+    margin-top: 10px;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+input[type="submit"]:hover {
+    /* ホバー時のスタイル */
+    background-color: #0056b3;
+}
+
+input[type="submit"]:active {
+    /* クリック時のスタイル */
+    transform: translateY(1px);
+}
+
+a {
+    /* リンクのスタイル */
+    color: #007bff;
+    text-decoration: none; /* 下線を非表示 */
+}
+
+a:hover {
+    /* リンクホバー時のスタイル */
+    text-decoration: underline; /* ホバー時に下線を表示 */
+}
