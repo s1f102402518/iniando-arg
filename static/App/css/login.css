@@ -1,114 +1,140 @@
+/* 基本設定 */
 body {
-    /* フォントと基本的な背景の設定 */
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f9; /* わずかに灰色がかった背景 */
+    font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif; /* 日本語フォントを優先 */
+    background-color: #e9e9e9; /* 薄いグレーの背景 */
     color: #333;
     margin: 0;
     padding: 20px;
     display: flex;
-    justify-content: center; /* 中央寄せ */
-    align-items: flex-start; /* 上部から配置 */
+    justify-content: center;
+    align-items: flex-start;
     min-height: 100vh;
 }
 
-h1 {
-    /* 見出しのスタイル */
-    color: #0056b3; /* ブランドカラーのような濃い青 */
-    text-align: center;
-    margin-bottom: 20px;
+.container {
+    width: 100%;
+    max-width: 500px; /* フォームコンテナより少し大きめのサイズ */
 }
 
-form {
-    /* フォームコンテナのスタイル */
+/* ヘッダー/システム情報 */
+header {
+    background-color: #003366; /* 濃い大学カラー */
+    color: #fff;
+    padding: 10px 15px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    font-size: 0.9em;
+    border-bottom: 2px solid #ffcc00; /* アクセントカラー */
+}
+
+.system-info {
+    margin: 0;
+    text-align: right;
+}
+
+main {
     background-color: #fff;
     padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 軽い影で立体感を出す */
-    width: 100%;
-    max-width: 400px; /* フォームの最大幅を設定 */
+    border-radius: 0 0 4px 4px; /* 下側だけ角丸を適用 */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-p {
-    /* エラーメッセージやリンクを含む段落のスタイル */
-    margin-top: 15px;
+/* タイトル */
+h1 {
+    color: #003366;
+    font-size: 1.5em;
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #ccc; /* 掲示板らしい点線 */
+}
+
+/* エラーメッセージ */
+.error-message {
+    color: #cc0000; /* 強い赤 */
+    background-color: #fff0f0;
+    border: 1px solid #cc0000;
+    padding: 10px;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 20px;
+    font-size: 0.9em;
+}
+
+/* フォームの段落（form.as_pに対応） */
+.login-form p {
     margin-bottom: 15px;
 }
 
-/* エラーメッセージのスタイル (Djangoの form.errors に対応) */
-p:first-child:not(:has(a)) {
-    color: #d9534f; /* 赤系の色 */
-    background-color: #f2dede;
-    border: 1px solid #ebccd1;
-    padding: 10px;
-    border-radius: 4px;
-    text-align: center;
-    font-weight: bold;
-}
-
-/* form.as_p でレンダリングされる p タグ内の要素 */
-form p {
-    margin-bottom: 20px;
-}
-
-/* ラベルと入力フィールドの配置調整 */
-label {
-    display: block; /* ラベルをブロック要素にして一行専有させる */
+/* ラベル */
+.login-form label {
+    display: block;
     margin-bottom: 5px;
     font-weight: bold;
     color: #555;
+    font-size: 0.9em;
 }
 
+/* 入力フィールド */
 input[type="text"],
 input[type="password"] {
-    /* テキスト入力フィールドとパスワード入力フィールドのスタイル */
     width: 100%;
     padding: 10px;
-    margin-top: 5px;
-    box-sizing: border-box; /* paddingとborderをwidthに含める */
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    transition: border-color 0.3s;
+    box-sizing: border-box;
+    border: 1px solid #b3b3b3; /* 標準的なグレー */
+    border-radius: 3px;
+    background-color: #fafafa;
+    transition: border-color 0.2s;
 }
 
 input[type="text"]:focus,
 input[type="password"]:focus {
-    /* フォーカス時のスタイル */
-    border-color: #007bff; /* 青色に変化 */
+    border-color: #0056b3;
     outline: none;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+    background-color: #fff;
 }
 
-input[type="submit"] {
-    /* ログインボタンのスタイル */
-    background-color: #007bff; /* 主要なボタンの色 */
+/* 認証ボタン */
+.auth-button {
+    background-color: #0056b3; /* 濃い青 */
     color: white;
-    padding: 10px 15px;
+    padding: 12px 15px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 1em;
+    font-weight: bold;
     width: 100%;
-    margin-top: 10px;
-    transition: background-color 0.3s, transform 0.1s;
+    margin-top: 20px;
+    transition: background-color 0.3s;
 }
 
-input[type="submit"]:hover {
-    /* ホバー時のスタイル */
-    background-color: #0056b3;
+.auth-button:hover {
+    background-color: #003366;
 }
 
-input[type="submit"]:active {
-    /* クリック時のスタイル */
+.auth-button:active {
     transform: translateY(1px);
 }
 
-a {
-    /* リンクのスタイル */
-    color: #007bff;
-    text-decoration: none; /* 下線を非表示 */
+/* フッターリンク */
+.footer-links {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.85em;
+    color: #777;
+    border-top: 1px dotted #e0e0e0;
+    padding-top: 15px;
 }
 
-a:hover {
-    /* リンクホバー時のスタイル */
-    text-decoration: underline; /* ホバー時に下線を表示 */
+.footer-links a {
+    color: #0056b3;
+    text-decoration: none;
+    margin: 0 5px;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
 }
