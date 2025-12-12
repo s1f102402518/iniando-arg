@@ -44,3 +44,14 @@ def delete_room(request, room_id):
     room = get_object_or_404(Room, id=room_id)
     room.delete()
     return redirect("lobby")
+
+
+
+def a_thread_page(request):
+    return render(request, "App/A_thread.html")
+
+def b_thread_page(request):
+    return render(request, "App/B_thread.html")
+
+def c_thread_page(request):
+    return render(request, "App/C_thread.html")
