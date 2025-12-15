@@ -1,106 +1,10 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <title>伊仁安堂大学掲示板</title>
-<style>
-body {
-    font-family: "メイリオ", "Yu Gothic", monospace;
-    background: #f0f0f0;
-    margin: 0;
-    padding: 0;
-}
-
-header {
-    background: #004080;
-    color: white;
-    padding: 15px 0;
-    text-align: center;
-    font-size: 20px;
-    font-weight: bold;
-}
-
-#input-area {
-    position: fixed;
-    top: 50px;
-    width: 100%;
-    max-width: 1000px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #f8f8f8;
-    padding: 15px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    z-index: 10;
-    border-radius: 5px;
-}
-
-#input-area label {
-    font-size: 12px;
-    margin-bottom: 3px;
-    display: block;
-    color: #333;
-}
-
-#message-input {
-    width: 100%;
-    padding: 8px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-bottom: 8px;
-    background: #fff;
-    box-sizing: border-box;
-    font-family: monospace;
-    resize: vertical; /* 高さを自由に変更可能 */
-    min-height: 50px;
-}
-
-#send-btn {
-    padding: 8px 20px;
-    background: #004080;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-main {
-    max-width: 1000px;
-    margin: 180px auto 20px;
-    padding: 0 15px;
-}
-
-#chat-box {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-}
-
-.message {
-    background: #ffffff;
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
-    font-size: 14px;
-    white-space: pre-wrap; /* 改行を保持して表示 */
-}
-
-.message .meta {
-    font-size: 12px;
-    color: #555;
-    margin-bottom: 4px;
-}
-
-.message .name {
-    font-weight: bold;
-    color: #004080;
-}
-
-#chat-box {
-    max-height: calc(100vh - 180px);
-    overflow-y: auto;
-}
-</style>
+<link rel="stylesheet" href="{% static 'App/css/thread.css' %}">
 </head>
 <body>
 
