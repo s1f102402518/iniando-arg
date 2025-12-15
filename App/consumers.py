@@ -22,7 +22,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         data = json.loads(text_data)
-        message = data["message"]
+        message = data.get("message")
+        username = data.get("username", "名無しの学生")
 
         # グループ全員に送信
         await self.channel_layer.group_send(
@@ -30,11 +31,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
             {
                 "type": "chat_message",
                 "message": message,
+                "username": username,
             }
         )
 
     async def chat_message(self, event):
-        await self.send(text_data=json.dumps({
-            "message": event["message"]
-        }))
+        message = event["message"]
+        username = event["username"]
 
+        await self.send(text_data=json.dumps({
+            "message": message,
+            "username": username,
+        }))

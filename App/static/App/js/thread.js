@@ -4,6 +4,8 @@ const chatBox = document.getElementById("chat-box");
 const input = document.getElementById("message-input");
 const sendBtn = document.getElementById("send-btn");
 
+const currentUsername = document.getElementById("current-username").value;
+
 let messageCount = 0;
 
 socket.onmessage = function(e) {
@@ -21,7 +23,7 @@ socket.onmessage = function(e) {
 
     const nameDiv = document.createElement("div");
     nameDiv.className = "name";
-    nameDiv.innerText = "名無しの学生";
+    nameDiv.innerText = data.username || "名無しの学生";
 
     const content = document.createElement("div");
     content.innerText = data.message; // 改行も保持される
@@ -36,7 +38,10 @@ socket.onmessage = function(e) {
 function sendMessage() {
     const text = input.value.trim();
     if (!text) return;
-    socket.send(JSON.stringify({ "message": text }));
+    socket.send(JSON.stringify({ 
+        "message": text,
+        "username": currentUsername // ログインユーザー名を送信
+    }));
     input.value = "";
 }
 

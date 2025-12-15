@@ -7,6 +7,11 @@
 <link rel="stylesheet" href="{% static 'App/css/thread.css' %}">
 </head>
 <body>
+{% if user.is_authenticated %}
+    <input type="hidden" id="current-username" value="{{ user.username }}">
+{% else %}
+    <input type="hidden" id="current-username" value="名無しの学生">
+{% endif %}
 
 <header>伊仁安堂大学掲示板</header>
 
