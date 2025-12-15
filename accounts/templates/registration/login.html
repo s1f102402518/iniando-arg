@@ -1,36 +1,38 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="utf-8">
-    <title>鴉ヶ丘大学 学生自由掲示板 - ログイン</title>
-    </head>
+  <meta charset="utf-8">
+  <title>鴉ヶ丘大学 学生自由掲示板 - ログイン</title>
+  <link rel="stylesheet" href="{% static 'accounts/css/login.css' %}">
+</head>
 <body>
-    <div class="container">
-        <header>
-            <p class="system-info">**現在時刻: 2025/12/11 17:32:11 JST** | **学内認証システム経由**</p>
-        </header>
+  <div class="container">
+    <header>
+      <p class="system-info">**現在時刻: 2025/12/11 17:32:11 JST** | **学内認証システム経由**</p>
+    </header>
 
-        <main>
-            <h1>【重要】学内掲示板へのアクセス認証</h1>
+    <main>
+      <h1>【重要】学内掲示板へのアクセス認証</h1>
 
-            {% if form.errors %}
-            <div class="error-message">
-                <p>!! 認証情報が一致しませんでした。ユーザーIDとパスワードを再度確認してください。</p>
-            </div>
-            {% endif %}
+      {% if form.errors %}
+      <div class="error-message">
+        <p>!! 認証情報が一致しませんでした。ユーザーIDとパスワードを再度確認してください。</p>
+      </div>
+      {% endif %}
 
-            <form method="post" class="login-form">
-                {% csrf_token %}
-                
-                {{ form.as_p }}
-                
-                <input type="submit" value="アクセス認証" class="auth-button" />
-            </form>
+      <form method="post" class="login-form">
+        {% csrf_token %}
+                        
+        {{ form.as_p }}
+                        
+        <input type="submit" value="アクセス認証" class="auth-button" />
+      </form>
 
-            <div class="footer-links">
-                <a href="{% url 'home' %}">トップページへ戻る</a> | <a href="#">利用規約</a>
-            </div>
-        </main>
-    </div>
+      <div class="footer-links">
+        <a href="{% url 'home' %}">トップページへ戻る</a> | <a href="#">利用規約</a>
+      </div>
+    </main>
+  </div>
 </body>
 </html>
