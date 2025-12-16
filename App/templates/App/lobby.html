@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,7 +7,6 @@
 </head>
 <body>
     <h1>伊仁安堂大学掲示板調査案件</h1>
-
     <h3>調査依頼書</h3>
     <h4>依頼人情報</h4>
     <ul>
@@ -28,22 +28,73 @@
         <button type="submit">検索</button>
     </form>
 
-    <form method="POST" action="/create/">
+    <form method="POST" action="{% url 'create_room' %}">
         {% csrf_token %}
         <input type="text" name="name" placeholder="部屋名">
         <button type="submit">部屋作成</button>
     </form>
 
     <h2>現在募集中の調査グループ</h2>
-    <ul>
+    <ul id="recruiting-rooms-list">
         {% for room in rooms %}
             <li>
                 {{ room.name }} ({{ room.entries.count }} / 3)
-                <a href="/room/{{ room.id }}/">参加</a>
+                <a href="{% url 'room_detail' room_id=room.id %}">参加</a>
             </li>
         {% empty %}
             <li>募集中の部屋はありません</li>
         {% endfor %}
     </ul>
+    
+    <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const messageType = urlParams.get('message');
+    
+    if (messageType) {
+         window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    const lobbySocket = new WebSocket(
+        'ws://' + window.location.host +
+        '/ws/lobby/'
+    );
+
+    lobbySocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        if (data.type === 'lobby_update') {
+            updateRoomList();
+        }
+    };
+    
+    async function updateRoomList() {
+        const listElement = document.getElementById('recruiting-rooms-list');
+        if (!listElement) return;
+
+        const response = await fetch('{% url "get_recruiting_rooms" %}');
+        const data = await response.json();
+
+        listElement.innerHTML = ''; 
+
+        if (data.rooms.length === 0) {
+            const li = document.createElement('li');
+            li.innerText = '募集中の部屋はありません';
+            listElement.appendChild(li);
+        } else {
+            data.rooms.forEach(room => {
+                const li = document.createElement('li');
+                
+                const textNode = document.createTextNode(`${room.name} (${room.count} / 3)`);
+                li.appendChild(textNode);
+                
+                const link = document.createElement('a');
+                link.href = `/room/${room.id}/`;
+                link.innerText = '参加';
+                li.appendChild(link);
+
+                listElement.appendChild(li);
+            });
+        }
+    }
+    </script>
 </body>
 </html>

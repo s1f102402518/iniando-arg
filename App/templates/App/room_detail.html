@@ -1,24 +1,93 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>{{ room.name }}</title>
+    <title>{{ room.name }} - グループ専用ロビー</title>
 </head>
 <body>
-    <h1>{{ room.name }}</h1>
+    <h1>グループ専用ロビー</h1>
+    
+    <h2>調査グループ名: {{ room.name }}</h2>
+    <p>ID: {{ room.id }}</p>
+    
+    <p>この部屋は調査員が3人揃い次第、チャットを開始できます。</p>
 
-    <h2>参加者</h2>
-    <ul>
-        {% for m in members %}
-            <li>{{ m.nickname }}</li>
+    <h3>現在の参加者 (<span id="member-count">{{ members|length }}</span> / 3)</h3>
+    <ul id="member-list">
+        {% for member in members %}
+            <li>{{ member.nickname }}</li> 
         {% endfor %}
     </ul>
 
-    {% if members.first.nickname == "Host" %}
-    <a href="/room/{{ room.id }}/delete/">部屋削除</a>
+    <hr>
+
+    <h3>グループ専用掲示板</h3>
+    {% if members|length == 3 %}
+        <p>メンバーが揃いました！以下の専用リンクから掲示板へ進んでください。</p>
+        <a href="{% url 'a_thread' %}">グループ専用チャットルームへ進む</a>
+    {% else %}
+        <p>調査員が揃うまでお待ちください。</p>
     {% endif %}
 
-    <br><br>
-    <a href="/">ロビーへ戻る</a>
+    <hr>
+    
+    {% if members.first.nickname == user.username %}
+        <form method="POST" action="{% url 'delete_room' room_id=room.id %}">
+            {% csrf_token %}
+            <button type="submit" onclick="return confirm('本当にこのグループを解散しますか？')">グループ解散（部屋削除）</button>
+        </form>
+    {% endif %}
+    
+    {% if members.first.nickname != user.username %}
+        <form method="POST" action="{% url 'leave_room' room_id=room.id %}">
+            {% csrf_token %}
+            <button type="submit" onclick="return confirm('本当にこのグループを抜けますか？')">グループを抜ける</button>
+        </form>
+    {% endif %}
+
+    <p><a href="{% url 'lobby' %}">ロビーに戻る</a></p>
+
+
+<script>
+    const roomID = "{{ room.id }}";
+    const socket = new WebSocket(
+        'ws://' + window.location.host +
+        '/ws/chat/' + roomID + '/'
+    );
+
+    const memberListElement = document.getElementById("member-list");
+    const memberCountElement = document.getElementById("member-count");
+    
+    socket.onmessage = async function(e) {
+        const data = JSON.parse(e.data);
+
+        if (data.type === "room_deleted") {
+            window.location.href = "{% url 'lobby' %}" + "?message=deleted";
+        }
+        
+        if (data.type === "member_update") {
+            await updateMemberList();
+        }
+    };
+    
+    async function updateMemberList() {
+        const response = await fetch(`/room/${roomID}/members/`);
+        const data = await response.json();
+        
+        if (memberListElement) {
+            memberListElement.innerHTML = '';
+            
+            data.members.forEach(nickname => {
+                const li = document.createElement("li");
+                li.innerText = nickname;
+                memberListElement.appendChild(li);
+            });
+            
+            memberCountElement.innerText = data.count;
+        }
+    }
+</script>
+
 </body>
 </html>
