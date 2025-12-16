@@ -3,15 +3,25 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>{{ room.name }} - グループ専用ロビー</title>
+    <title>{{ room.name }}専用ロビー</title>
 </head>
 <body>
     <h1>グループ専用ロビー</h1>
     
     <h2>調査グループ名: {{ room.name }}</h2>
-    <p>ID: {{ room.id }}</p>
-    
-    <p>この部屋は調査員が3人揃い次第、チャットを開始できます。</p>
+
+    <p>
+        ID: <span id="room-id-value">{{ room.id }}</span>
+        <button onclick="copyRoomId()"
+        style="
+        cursor: pointer;
+        font-size: 1em;
+        line-height: 1.2;
+        background: rgba(0, 0, 0, 0.489);
+        border: none;
+        margin-left: 5px;
+        ">📄</button>
+    </p>
 
     <h3>現在の参加者 (<span id="member-count">{{ members|length }}</span> / 3)</h3>
     <ul id="member-list">
@@ -23,12 +33,8 @@
     <hr>
 
     <h3>グループ専用掲示板</h3>
-    {% if members|length == 3 %}
-        <p>メンバーが揃いました！以下の専用リンクから掲示板へ進んでください。</p>
-        <a href="{% url 'a_thread' %}">グループ専用チャットルームへ進む</a>
-    {% else %}
-        <p>調査員が揃うまでお待ちください。</p>
-    {% endif %}
+    <p>以下の専用リンクから掲示板へ進んでください</p>
+    <a href="{% url 'thread' room_id=room.id %}" target="_blank">グループ専用掲示板へ進む</a>
 
     <hr>
     
@@ -50,6 +56,18 @@
 
 
 <script>
+    function copyRoomId() {
+        const roomIdElement = document.getElementById('room-id-value');
+        const roomId = roomIdElement.innerText;
+        
+        navigator.clipboard.writeText(roomId).then(() => {
+            alert('調査グループIDをコピーしました: ' + roomId);
+        }).catch(err => {
+            console.error('IDのコピーに失敗しました:', err);
+            alert('コピーに失敗しました。お手数ですが手動でコピーしてください。');
+        });
+    }
+
     const roomID = "{{ room.id }}";
     const socket = new WebSocket(
         'ws://' + window.location.host +

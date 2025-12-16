@@ -109,14 +109,16 @@ def delete_room(request, room_id):
     
     return redirect("lobby")
 
-def a_thread_page(request):
-    return render(request, "App/A_thread.html")
+def thread(request, room_id):
+    if not request.user.is_authenticated:
+        return redirect("login")
+    
+    room = get_object_or_404(Room, id=room_id)
+    
+    if not room.entries.filter(nickname=request.user.username).exists():
+        return redirect("room_detail", room_id=room.id)
 
-def b_thread_page(request):
-    return render(request, "App/B_thread.html")
-
-def c_thread_page(request):
-    return render(request, "App/C_thread.html")
+    return render(request, "App/thread.html", {"room": room})
 
 def get_room_members(request, room_id):
     room = get_object_or_404(Room, id=room_id)
@@ -150,6 +152,10 @@ def leave_room(request, room_id):
     if request.method == "POST":
         room = get_object_or_404(Room, id=room_id)
         current_username = request.user.username
+
+        host_entry = room.entries.first() 
+        if host_entry and host_entry.nickname == current_username:
+            return redirect("room_detail", room_id=room.id)
 
         try:
             entry = Entry.objects.get(room=room, nickname=current_username)
