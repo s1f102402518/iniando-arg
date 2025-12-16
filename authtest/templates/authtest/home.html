@@ -1,8 +1,10 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ja">
   <head>
     <meta charset="utf-8">
     <title>Home</title>
+    <link rel="stylesheet" href="{% static 'authtest/css/home.css' %}">
   </head>
   <body>
     <h1>Home</h1>
@@ -14,8 +16,9 @@
       <button type="submit">logout</button>
     </form>
     {% else %}
-    <p>You are not logged in.</p>
-    <p><a href="{% url 'login' %}">login</a></p>
+    <p>ログインしていません</p>
+    <p><a href="{% url 'login' %}">ログイン</a></p>
     {% endif %}
+    <p><a href="{% url 'signup' %}">サインアップ</a></p>
   </body>
 </html>
