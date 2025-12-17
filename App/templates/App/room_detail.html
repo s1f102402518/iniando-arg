@@ -1,24 +1,111 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>{{ room.name }}</title>
+    <title>{{ room.name }}専用ロビー</title>
 </head>
 <body>
-    <h1>{{ room.name }}</h1>
+    <h1>グループ専用ロビー</h1>
+    
+    <h2>調査グループ名: {{ room.name }}</h2>
 
-    <h2>参加者</h2>
-    <ul>
-        {% for m in members %}
-            <li>{{ m.nickname }}</li>
+    <p>
+        ID: <span id="room-id-value">{{ room.id }}</span>
+        <button onclick="copyRoomId()"
+        style="
+        cursor: pointer;
+        font-size: 1em;
+        line-height: 1.2;
+        background: rgba(0, 0, 0, 0.489);
+        border: none;
+        margin-left: 5px;
+        ">📄</button>
+    </p>
+
+    <h3>現在の参加者 (<span id="member-count">{{ members|length }}</span> / 3)</h3>
+    <ul id="member-list">
+        {% for member in members %}
+            <li>{{ member.nickname }}</li> 
         {% endfor %}
     </ul>
 
-    {% if members.first.nickname == "Host" %}
-    <a href="/room/{{ room.id }}/delete/">部屋削除</a>
+    <hr>
+
+    <h3>グループ専用掲示板</h3>
+    <p>以下の専用リンクから掲示板へ進んでください</p>
+    <a href="{% url 'thread' room_id=room.id %}" target="_blank">グループ専用掲示板へ進む</a>
+
+    <hr>
+    
+    {% if members.first.nickname == user.username %}
+        <form method="POST" action="{% url 'delete_room' room_id=room.id %}">
+            {% csrf_token %}
+            <button type="submit" onclick="return confirm('本当にこのグループを解散しますか？')">グループ解散（部屋削除）</button>
+        </form>
+    {% endif %}
+    
+    {% if members.first.nickname != user.username %}
+        <form method="POST" action="{% url 'leave_room' room_id=room.id %}">
+            {% csrf_token %}
+            <button type="submit" onclick="return confirm('本当にこのグループを抜けますか？')">グループを抜ける</button>
+        </form>
     {% endif %}
 
-    <br><br>
-    <a href="/">ロビーへ戻る</a>
+    <p><a href="{% url 'lobby' %}">ロビーに戻る</a></p>
+
+
+<script>
+    function copyRoomId() {
+        const roomIdElement = document.getElementById('room-id-value');
+        const roomId = roomIdElement.innerText;
+        
+        navigator.clipboard.writeText(roomId).then(() => {
+            alert('調査グループIDをコピーしました: ' + roomId);
+        }).catch(err => {
+            console.error('IDのコピーに失敗しました:', err);
+            alert('コピーに失敗しました。お手数ですが手動でコピーしてください。');
+        });
+    }
+
+    const roomID = "{{ room.id }}";
+    const socket = new WebSocket(
+        'ws://' + window.location.host +
+        '/ws/chat/' + roomID + '/'
+    );
+
+    const memberListElement = document.getElementById("member-list");
+    const memberCountElement = document.getElementById("member-count");
+    
+    socket.onmessage = async function(e) {
+        const data = JSON.parse(e.data);
+
+        if (data.type === "room_deleted") {
+            window.location.href = "{% url 'lobby' %}" + "?message=deleted";
+        }
+        
+        if (data.type === "member_update") {
+            await updateMemberList();
+        }
+    };
+    
+    async function updateMemberList() {
+        const response = await fetch(`/room/${roomID}/members/`);
+        const data = await response.json();
+        
+        if (memberListElement) {
+            memberListElement.innerHTML = '';
+            
+            data.members.forEach(nickname => {
+                const li = document.createElement("li");
+                li.innerText = nickname;
+                memberListElement.appendChild(li);
+            });
+            
+            memberCountElement.innerText = data.count;
+        }
+    }
+</script>
+
 </body>
 </html>
