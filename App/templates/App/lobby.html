@@ -57,7 +57,7 @@
         {% for room in rooms %}
             <li>
                 {{ room.name }} ({{ room.entries.count }} / 3)
-                <a href="{% url 'room_detail' room_id=room.id %}">参加</a>
+                <a href="{% url 'room_detail' room_id=room.id %}" style="margin-left: 10px;">参加</a>
             </li>
         {% empty %}
             <li>募集中の部屋はありません</li>
@@ -108,6 +108,9 @@
                 const link = document.createElement('a');
                 link.href = `/room/${room.id}/`;
                 link.innerText = '参加';
+
+                link.style.marginLeft = '13.5px';
+
                 li.appendChild(link);
 
                 listElement.appendChild(li);
