@@ -34,6 +34,24 @@
         <button type="submit">部屋作成</button>
     </form>
 
+    <hr> <h2>あなたが参加中の調査グループ</h2>
+    <ul id="my-rooms-list">
+        {% for room in my_groups %}
+            <li>
+                {{ room.name }} ({{ room.num_players }} / 3)
+                {% if room.num_players == 3 %}
+                    <span style="color: red;">【満員】</span>
+                {% else %}
+                    <span style="color: green;">【募集中】</span>
+                {% endif %}
+                
+                <a href="{% url 'room_detail' room_id=room.id %}" style="margin-left: 10px;">グループへ</a>
+            </li>
+        {% empty %}
+            <li>現在、参加中のグループはありません</li>
+        {% endfor %}
+    </ul>
+
     <h2>現在募集中の調査グループ</h2>
     <ul id="recruiting-rooms-list">
         {% for room in rooms %}
@@ -63,6 +81,7 @@
         const data = JSON.parse(e.data);
         if (data.type === 'lobby_update') {
             updateRoomList();
+            updateMyRoomList();
         }
     };
     
@@ -95,6 +114,26 @@
             });
         }
     }
+
+    async function updateMyRoomList() {
+        const listElement = document.getElementById('my-rooms-list'); // id="my-rooms-list" を参照
+        if (!listElement) return;
+
+        const response = await fetch('{% url "get_my_rooms" %}');
+        const data = await response.json();
+
+        if (response.ok) {
+            listElement.innerHTML = data.html;
+        } else {
+             console.error("Failed to fetch my rooms:", data.error);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updateRoomList();
+        updateMyRoomList();
+    });
+
     </script>
 </body>
 </html>

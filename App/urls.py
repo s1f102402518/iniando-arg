@@ -9,5 +9,6 @@ urlpatterns = [
     path('room/<uuid:room_id>/leave/', views.leave_room, name='leave_room'),
     path('room/<uuid:room_id>/members/', views.get_room_members, name='get_room_members'),
     path('api/recruiting_rooms/', views.get_recruiting_rooms, name='get_recruiting_rooms'),
-    path("thread/<uuid:room_id>/", views.thread, name="thread"),
+    path('thread/<uuid:room_id>/', views.thread, name='thread'),
+    path('get_my_rooms/', views.get_my_rooms, name='get_my_rooms'),
 ]

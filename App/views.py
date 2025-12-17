@@ -7,6 +7,7 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.http import JsonResponse
 from django.contrib import messages
+from django.template.loader import render_to_string
 
 def broadcast_lobby_update():
     channel_layer = get_channel_layer()
@@ -21,18 +22,21 @@ def broadcast_lobby_update():
 
 def lobby(request):
     query = request.GET.get("q", "")
-    rooms = Room.objects.annotate(num_players=Count("entries"))
+    all_rooms = Room.objects.annotate(num_players=Count("entries"))
 
     if query:
-        rooms = rooms.filter(name__icontains=query) | rooms.filter(id__icontains=query)
+        rooms = all_rooms.filter(name__icontains=query) | all_rooms.filter(id__icontains=query)
         rooms = rooms.annotate(num_players=Count("entries")).filter(num_players__lt=3)
     else:
-        rooms = rooms.filter(num_players__lt=3)
+        rooms = all_rooms.filter(num_players__lt=3)
+
+    my_groups = all_rooms.filter(entries__nickname=request.user.username).annotate(num_players=Count("entries")).order_by('-id')
 
     yesterday = timezone.now().date() - timedelta(days=1)
 
     return render(request, "App/lobby.html", {
         "rooms": rooms,
+        "my_groups": my_groups,
         "yesterday": yesterday,
     })
 
@@ -140,7 +144,7 @@ def get_recruiting_rooms(request):
         room_data.append({
             'id': str(room.id),
             'name': room.name,
-            'count': room.entries.count(),
+            'count': room.num_players,
         })
     
     return JsonResponse({'rooms': room_data})
@@ -179,3 +183,14 @@ def leave_room(request, room_id):
         return redirect("lobby")
     
     return redirect("lobby")
+
+def get_my_rooms(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Not authenticated'}, status=401)
+
+    all_rooms = Room.objects.annotate(num_players=Count("entries"))
+    my_groups = all_rooms.filter(entries__nickname=request.user.username).order_by('-id')
+
+    html = render_to_string('App/my_rooms_list.html', {'my_groups': my_groups}, request=request)
+
+    return JsonResponse({'html': html})
