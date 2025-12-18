@@ -111,8 +111,9 @@
             window.history.replaceState({}, document.title, window.location.pathname);
         }
 
+        const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
         const lobbySocket = new WebSocket(
-            'ws://' + window.location.host + '/ws/lobby/'
+            ws_scheme + '://' + window.location.host + '/ws/lobby/'
         );
 
         lobbySocket.onmessage = function(e) {
