@@ -10,23 +10,35 @@
         <h1 style="margin: 0;">伊仁安堂大学掲示板調査案件</h1>
 
         <div class="user-menu" style="position: relative;">
-            <span id="user-name" style="
-            cursor: pointer;
-            font-weight: bold;
-            border: 1px solid #555;   /* 枠線を追加 */
-            padding: 6px 12px;        /* 内側に余白を作って押しやすくする */
-            border-radius: 4px;       /* 角を少し丸くする */
-            display: inline-block;    /* 余白を正しく反映させるために必要 */
-            user-select: none;        /* クリック時にテキストが選択されないようにする */
-            ">
-                {{ request.user.username }} ▼
-            </span>
-            <div id="logout-dropdown" style="display: none; position: absolute; right: 0; top: calc(100% + 10px); background: white; border: 1px solid #ccc; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 1000;">
-                <form method="POST" action="{% url 'logout' %}">
-                    {% csrf_token %}
-                    <button type="submit" style="background: none; border: none; color: red; cursor: pointer; white-space: nowrap;">ログアウト</button>
-                </form>
-            </div>
+            {% if request.user.is_authenticated %}
+                <span id="user-name" style="
+                    cursor: pointer;
+                    font-weight: bold;
+                    border: 1px solid #555;
+                    padding: 6px 12px;
+                    border-radius: 4px;
+                    display: inline-block;
+                    user-select: none;
+                ">
+                    {{ request.user.username }} ▼
+                </span>
+                <div id="logout-dropdown" style="display: none; position: absolute; right: 0; top: calc(100% + 10px); background: white; border: 1px solid #ccc; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 1000;">
+                    <form method="POST" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" style="background: none; border: none; color: red; cursor: pointer; white-space: nowrap;">ログアウト</button>
+                    </form>
+                </div>
+            {% else %}
+                <a href="{% url 'login' %}" style="
+                    text-decoration: none;
+                    color: #333;
+                    font-weight: bold;
+                    border: 1px solid #555;
+                    padding: 6px 12px;
+                    border-radius: 4px;
+                    display: inline-block;
+                ">ログイン</a>
+            {% endif %}
         </div>
 
         <style>
@@ -50,7 +62,6 @@
     <p>依頼者が大学掲示板を利用していたところ不審な所が散見された。単独での調査は不可能と考え依頼。</p>
     <h4>調査方法</h4>
     <p>３人一組で調査にあたってもらう。既存グループに参加するか、新たにグループを設立するように。<br>※隠しリンク・ソースコード・ファイルの改編、解析は不要です。目に見える情報から推理してください。</p>
-    
 
     <form method="GET" action="">
         <input type="text" name="q" placeholder="部屋名 または ID 検索">
@@ -63,7 +74,8 @@
         <button type="submit">部屋作成</button>
     </form>
 
-    <hr> <h2>あなたが参加中の調査グループ</h2>
+    <hr>
+    <h2>あなたが参加中の調査グループ</h2>
     <ul id="my-rooms-list">
         {% for room in my_groups %}
             <li>
@@ -73,7 +85,6 @@
                 {% else %}
                     <span style="color: green;">【募集中】</span>
                 {% endif %}
-                
                 <a href="{% url 'room_detail' room_id=room.id %}" style="margin-left: 10px;">グループへ</a>
             </li>
         {% empty %}
@@ -92,91 +103,84 @@
             <li>募集中の部屋はありません</li>
         {% endfor %}
     </ul>
-    
+
     <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const messageType = urlParams.get('message');
-    
-    if (messageType) {
-         window.history.replaceState({}, document.title, window.location.pathname);
-    }
+        const urlParams = new URLSearchParams(window.location.search);
+        const messageType = urlParams.get('message');
+        if (messageType) {
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
 
-    const lobbySocket = new WebSocket(
-        'ws://' + window.location.host +
-        '/ws/lobby/'
-    );
+        const lobbySocket = new WebSocket(
+            'ws://' + window.location.host + '/ws/lobby/'
+        );
 
-    lobbySocket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-        if (data.type === 'lobby_update') {
+        lobbySocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            if (data.type === 'lobby_update') {
+                updateRoomList();
+                updateMyRoomList();
+            }
+        };
+
+        async function updateRoomList() {
+            const listElement = document.getElementById('recruiting-rooms-list');
+            if (!listElement) return;
+            const response = await fetch('{% url "get_recruiting_rooms" %}');
+            const data = await response.json();
+            listElement.innerHTML = ''; 
+            if (data.rooms.length === 0) {
+                const li = document.createElement('li');
+                li.innerText = '募集中の部屋はありません';
+                listElement.appendChild(li);
+            } else {
+                data.rooms.forEach(room => {
+                    const li = document.createElement('li');
+                    li.innerText = `${room.name} (${room.count} / 3)`;
+                    const link = document.createElement('a');
+                    link.href = `/room/${room.id}/`;
+                    link.innerText = '参加';
+                    link.style.marginLeft = '13.5px';
+                    li.appendChild(link);
+                    listElement.appendChild(li);
+                });
+            }
+        }
+
+        async function updateMyRoomList() {
+            const listElement = document.getElementById('my-rooms-list');
+            if (!listElement) return;
+            const response = await fetch('{% url "get_my_rooms" %}');
+            const data = await response.json();
+            if (response.ok) {
+                listElement.innerHTML = data.html;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
             updateRoomList();
             updateMyRoomList();
-        }
-    };
-    
-    async function updateRoomList() {
-        const listElement = document.getElementById('recruiting-rooms-list');
-        if (!listElement) return;
+        });
 
-        const response = await fetch('{% url "get_recruiting_rooms" %}');
-        const data = await response.json();
+        const userNameBtn = document.getElementById('user-name');
+        const logoutMenu = document.getElementById('logout-dropdown');
 
-        listElement.innerHTML = ''; 
-
-        if (data.rooms.length === 0) {
-            const li = document.createElement('li');
-            li.innerText = '募集中の部屋はありません';
-            listElement.appendChild(li);
-        } else {
-            data.rooms.forEach(room => {
-                const li = document.createElement('li');
-                
-                const textNode = document.createTextNode(`${room.name} (${room.count} / 3)`);
-                li.appendChild(textNode);
-                
-                const link = document.createElement('a');
-                link.href = `/room/${room.id}/`;
-                link.innerText = '参加';
-
-                link.style.marginLeft = '13.5px';
-
-                li.appendChild(link);
-
-                listElement.appendChild(li);
+        if (userNameBtn && logoutMenu) {
+            userNameBtn.addEventListener('click', function(e) {
+                if (logoutMenu.style.display === 'none' || logoutMenu.style.display === '') {
+                    logoutMenu.style.display = 'block';
+                } else {
+                    logoutMenu.style.display = 'none';
+                }
+                e.stopPropagation(); 
             });
         }
-    }
 
-    async function updateMyRoomList() {
-        const listElement = document.getElementById('my-rooms-list'); // id="my-rooms-list" を参照
-        if (!listElement) return;
-
-        const response = await fetch('{% url "get_my_rooms" %}');
-        const data = await response.json();
-
-        if (response.ok) {
-            listElement.innerHTML = data.html;
-        } else {
-             console.error("Failed to fetch my rooms:", data.error);
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        updateRoomList();
-        updateMyRoomList();
-    });
-
-    document.getElementById('user-name').addEventListener('click', function(e) {
-    const dropdown = document.getElementById('logout-dropdown');
-    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-    e.stopPropagation();
-    });
-
-    document.addEventListener('click', function() {
-        const dropdown = document.getElementById('logout-dropdown');
-        dropdown.style.display = 'none';
-    });
-
+        document.addEventListener('click', function() {
+            if (logoutMenu) {
+                logoutMenu.style.display = 'none';
+            }
+        });
     </script>
 </body>
 </html>
