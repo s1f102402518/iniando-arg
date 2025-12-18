@@ -18,7 +18,7 @@ const input = document.getElementById("message-input");
 const sendBtn = document.getElementById("send-btn");
 const currentUsername = document.getElementById("current-username").value;
 
-let messageCount = 0;
+let messageCount = 20;
 
 function displayMessage(data) {
     messageCount++;
@@ -125,3 +125,19 @@ function showCopyAlertWithButton(displayText, copyText) {
 
     setTimeout(() => box.remove(), 10000);
 }
+
+ // ユーザー名を使って固定化（毎回同じ人は同じ投稿を見る）
+  const username =
+    document.getElementById("current-username")?.value || "guest";
+
+  // 0,1,2 のどれかになる
+  const variant =
+    username.charCodeAt(0) % 3;
+
+  document.querySelectorAll(".special").forEach(el => {
+    el.style.display = "none";
+  });
+
+  document.querySelectorAll(".special-" + variant).forEach(el => {
+    el.style.display = "block";
+  });

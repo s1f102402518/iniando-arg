@@ -5,6 +5,7 @@ body {
     padding: 0;
 }
 
+/* ===== ヘッダー ===== */
 header {
     background: #004080;
     color: white;
@@ -14,6 +15,7 @@ header {
     font-weight: bold;
 }
 
+/* ===== 入力欄 ===== */
 #input-area {
     position: fixed;
     top: 50px;
@@ -45,7 +47,7 @@ header {
     background: #fff;
     box-sizing: border-box;
     font-family: monospace;
-    resize: vertical; /* 高さを自由に変更可能 */
+    resize: vertical;
     min-height: 50px;
 }
 
@@ -59,6 +61,7 @@ header {
     font-size: 14px;
 }
 
+/* ===== メイン ===== */
 main {
     max-width: 1000px;
     margin: 180px auto 20px;
@@ -68,29 +71,36 @@ main {
 #chat-box {
     display: flex;
     flex-direction: column;
-    gap: 0;
+    max-height: calc(100vh - 180px);
+    overflow-y: auto;
 }
 
+/* ===== 投稿 ===== */
 .message {
     background: #ffffff;
-    padding: 10px;
+    padding: 8px 10px;
     border-bottom: 1px solid #ccc;
     font-size: 14px;
-    white-space: pre-wrap; /* 改行を保持して表示 */
 }
 
+/* 投稿日・No */
 .message .meta {
     font-size: 12px;
     color: #555;
     margin-bottom: 4px;
 }
 
+/* 名前 */
 .message .name {
+    font-size: 14px;
     font-weight: bold;
     color: #004080;
+    margin-bottom: 4px;
 }
 
-#chat-box {
-    max-height: calc(100vh - 180px);
-    overflow-y: auto;
+/* 本文 */
+.message .content {
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre-wrap; /* AA・改行対応 */
 }
