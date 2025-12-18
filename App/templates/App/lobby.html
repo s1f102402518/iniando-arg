@@ -163,6 +163,25 @@
             updateMyRoomList();
         });
 
+        // 1. ブラウザのURLから検索ワード（?q=xxx）を取得する
+    const urlParams = new URLSearchParams(window.location.search);
+    const query = urlParams.get('q');
+
+    // 2. APIの基本URLを用意する
+    let apiUrl = LOBBY_CONFIG.recruitingApiUrl;
+
+    // 3. もし検索ワードがあれば、APIのURLの後ろにくっつける
+    if (query) {
+    // URLの末尾に ?q=検索ワード を追加
+    // (すでに?が含まれている場合に備えて区切り文字を判定しています)
+        const separator = apiUrl.includes('?') ? '&' : '?';
+        apiUrl += `${separator}q=${encodeURIComponent(query)}`;
+    }
+
+// 4. 検索ワード付きのURLでAPIを叩く
+    const response = await fetch(apiUrl);
+        const data = await response.json();
+        
         const userNameBtn = document.getElementById('user-name');
         const logoutMenu = document.getElementById('logout-dropdown');
 
@@ -182,6 +201,16 @@
                 logoutMenu.style.display = 'none';
             }
         });
+    </script>
+    {{ recruiting_api_url|json_script:"recruiting-api-url" }}
+
+    <script>
+    // 定義したデータを取得
+        const LOBBY_CONFIG = {
+            recruitingApiUrl: JSON.parse(document.getElementById('recruiting-api-url').textContent)
+        };
+    
+    // ... (以下既存のスクリプト)
     </script>
 </body>
 </html>
