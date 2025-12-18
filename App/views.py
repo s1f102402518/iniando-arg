@@ -8,6 +8,7 @@ from channels.layers import get_channel_layer
 from django.http import JsonResponse
 from django.contrib import messages
 from django.template.loader import render_to_string
+from django.db.models import Q
 
 def broadcast_lobby_update():
     channel_layer = get_channel_layer()
@@ -194,3 +195,42 @@ def get_my_rooms(request):
     html = render_to_string('App/my_rooms_list.html', {'my_groups': my_groups}, request=request)
 
     return JsonResponse({'html': html})
+
+# 1. ロビー画面を表示するビュー
+def lobby(request):
+    query = request.GET.get('q') # URLから ?q=... を取得
+    
+    # 元々の部屋取得ロジック（例）
+    rooms = Room.objects.all()
+
+    if query:
+        # 名前 または ID で検索するロジック
+        if query.isdigit():
+            # 数字ならIDも検索対象に含める
+            rooms = rooms.filter(Q(name__icontains=query) | Q(id=int(query)))
+        else:
+            # 文字なら名前だけ検索
+            rooms = rooms.filter(name__icontains=query)
+
+    context = {
+        'rooms': rooms,
+        # ... 他のコンテキスト ...
+    }
+    return render(request, 'App/lobby.html', context)
+
+
+# 2. JavaScriptが叩いているAPIのビュー (get_recruiting_rooms)
+def get_recruiting_rooms(request):
+    query = request.GET.get('q') # APIも検索ワードを受け取れるようにする
+    
+    rooms = Room.objects.all()
+
+    # 上と同じ検索ロジックを入れる
+    if query:
+        if query.isdigit():
+            rooms = rooms.filter(Q(name__icontains=query) | Q(id=int(query)))
+        else:
+            rooms = rooms.filter(name__icontains=query)
+
+    # ... JSONデータを返す処理 ...
+    return JsonResponse({'rooms': list(rooms.values())})
