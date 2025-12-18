@@ -6,7 +6,36 @@
     <title>Lobby</title>
 </head>
 <body>
-    <h1>伊仁安堂大学掲示板調査案件</h1>
+    <header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-bottom: 1px solid #ccc;">
+        <h1 style="margin: 0;">伊仁安堂大学掲示板調査案件</h1>
+
+        <div class="user-menu" style="position: relative;">
+            <span id="user-name" style="
+            cursor: pointer;
+            font-weight: bold;
+            border: 1px solid #555;   /* 枠線を追加 */
+            padding: 6px 12px;        /* 内側に余白を作って押しやすくする */
+            border-radius: 4px;       /* 角を少し丸くする */
+            display: inline-block;    /* 余白を正しく反映させるために必要 */
+            user-select: none;        /* クリック時にテキストが選択されないようにする */
+            ">
+                {{ request.user.username }} ▼
+            </span>
+            <div id="logout-dropdown" style="display: none; position: absolute; right: 0; top: calc(100% + 10px); background: white; border: 1px solid #ccc; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 1000;">
+                <form method="POST" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" style="background: none; border: none; color: red; cursor: pointer; white-space: nowrap;">ログアウト</button>
+                </form>
+            </div>
+        </div>
+
+        <style>
+            #user-name:hover {
+                background-color: #eee;
+            }
+        </style>
+    </header>
+
     <h3>調査依頼書</h3>
     <h4>依頼人情報</h4>
     <ul>
@@ -135,6 +164,17 @@
     document.addEventListener('DOMContentLoaded', () => {
         updateRoomList();
         updateMyRoomList();
+    });
+
+    document.getElementById('user-name').addEventListener('click', function(e) {
+    const dropdown = document.getElementById('logout-dropdown');
+    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    e.stopPropagation();
+    });
+
+    document.addEventListener('click', function() {
+        const dropdown = document.getElementById('logout-dropdown');
+        dropdown.style.display = 'none';
     });
 
     </script>
