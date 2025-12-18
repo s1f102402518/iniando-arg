@@ -24,83 +24,9 @@
 <main>
     <div id="chat-box"></div>
 </main>
-
 <script>
-    const roomID = "{{ room.id }}";
-    
-    const socket = new WebSocket("ws://" + window.location.host + "/ws/chat/" + roomID + "/");
-
-    const chatBox = document.getElementById("chat-box");
-    const input = document.getElementById("message-input");
-    const sendBtn = document.getElementById("send-btn");
-
-    const currentUsername = document.getElementById("current-username").value;
-
-    let messageCount = 0;
-
-    function displayMessage(data, isInitialLoad) {
-		messageCount++;
-
-		const div = document.createElement("div");
-		div.className = "message";
-
-		const meta = document.createElement("div");
-		meta.className = "meta";
-		
-		let displayTimestamp = "日時不明";
-		if (data.timestamp) {
-			const date = new Date(data.timestamp);
-			const year = date.getFullYear();
-			const month = date.getMonth() + 1;
-			const day = date.getDate();
-			const hours = date.getHours();
-			const minutes = ('0' + date.getMinutes()).slice(-2); 
-
-			displayTimestamp = `${year}/${month}/${day} ${hours}:${minutes}`;
-		} else {
-			const now = new Date();
-			displayTimestamp = now.getFullYear() + '/' + (now.getMonth()+1) + '/' + now.getDate() + ' ' + now.getHours() + ':' + ('0' + now.getMinutes()).slice(-2);
-		}
-		
-		meta.innerText = "No." + messageCount + " 投稿日：" + displayTimestamp; 
-
-		const nameDiv = document.createElement("div");
-		nameDiv.className = "name";
-		nameDiv.innerText = data.username || "名無しの学生";
-
-		const content = document.createElement("div");
-		content.innerText = data.message; 
-
-		div.appendChild(meta);
-		div.appendChild(nameDiv);
-		div.appendChild(content);
-
-		chatBox.prepend(div);
-	}
-
-    socket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-        displayMessage(data, false);
-    };
-
-    function sendMessage() {
-        const text = input.value.trim();
-        if (!text) return;
-        socket.send(JSON.stringify({ 
-            "message": text,
-            "username": currentUsername
-        }));
-        input.value = "";
-    }
-
-    sendBtn.onclick = sendMessage;
-    input.addEventListener("keypress", function(e) {
-        if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            sendMessage();
-        }
-    });
+    window.ROOM_ID = "{{ room.id }}";
 </script>
-
 </body>
+<script src="{% static 'App/js/main.js' %}"></script>
 </html>
