@@ -55,15 +55,34 @@ function displayMessage(data) {
 
 socket.onmessage = (e) => {
     const data = JSON.parse(e.data);
+    const msg = data.message?.trim();
 
-    if (data.message && data.message.includes(ALERT_WORD)) {
-    showCopyAlertWithButton(
-        ANSWER_URL,   // ← 画面に表示される内容
-        ANSWER_URL    // ← コピーされる内容
-    );
-}
+    // ① まず通常メッセージを表示
     displayMessage(data);
+
+    // ② hint 判定（最後に prepend するので最上位になる）
+    if (msg === "hint") {
+        const hint1 = document.querySelector(".hint-1");
+        if (hint1) {
+            hint1.style.display = "block";
+            chatBox.prepend(hint1);
+        }
+    }
+
+    if (msg === "hint2") {
+        const hint2 = document.querySelector(".hint-2");
+        if (hint2) {
+            hint2.style.display = "block";
+            chatBox.prepend(hint2);
+        }
+    }
+
+    // ③ alert（UIに影響しない）
+    if (msg && msg.includes(ALERT_WORD)) {
+        showCopyAlertWithButton(ANSWER_URL, ANSWER_URL);
+    }
 };
+
 
 
 function sendMessage() {
