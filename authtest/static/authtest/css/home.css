@@ -1,0 +1,100 @@
+@charset "utf-8";
+/* --- 共通設定：シリーズ通しての統一感 --- */
+:root {
+  --univ-blue: #003366;      /* 鴉ヶ丘大学カラー */
+  --univ-bg: #F0F2F5;        /* 背景グレー */
+  --text-main: #333333;
+  --text-sub: #666666;
+  --border-color: #CCCCCC;
+  --status-bg: #E3F2FD;      /* ログイン状態を示す薄い青 */
+  --font-base: "Yu Gothic", "Meiryo", sans-serif;
+}
+/* --- 全体レイアウト --- */
+body {
+  margin: 0;
+  padding: 40px 20px;
+  font-family: var(--font-base);
+  background-color: var(--univ-bg);
+  color: var(--text-main);
+  /* 要素を中央に一列に積み上げる */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+/* 各要素の幅を揃えて、スマホのアプリ画面っぽく見せる */
+body > * {
+  width: 100%;
+  max-width: 400px; /* 少し狭めにして「端末」感を出す */
+}
+/* --- タイトル --- */
+h1 {
+  font-size: 1.25rem;
+  color: var(--text-main);
+  text-align: center;
+  border-bottom: 2px solid var(--univ-blue);
+  padding-bottom: 10px;
+  margin-bottom: 30px;
+  letter-spacing: 0.1em;
+}
+/* --- ユーザー情報の表示エリア --- */
+/* "Hi user!" や "ログインしていません" の部分 */
+p {
+  margin: 0 0 15px 0;
+  padding: 15px;
+  background-color: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-left: 5px solid var(--univ-blue); /* 左に青いラインを入れてステータスっぽく */
+  font-size: 0.95rem;
+  color: var(--text-main);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+/* --- リンクボタン化 --- */
+/* テキストリンクを「押しやすい四角いボタン」に変える */
+a {
+  display: block;
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 15px;
+  background-color: #FFFFFF;
+  color: var(--univ-blue);
+  border: 1px solid var(--univ-blue);
+  text-decoration: none;
+  text-align: center;
+  font-weight: bold;
+  transition: all 0.2s;
+  box-sizing: border-box;
+  /* ボタンの中に「＞」をつけてメニューっぽくする */
+  position: relative;
+}
+a::after {
+  content: ":再生ボタン:";
+  position: absolute;
+  right: 15px;
+  font-size: 0.8em;
+  opacity: 0.5;
+}
+a:hover {
+  background-color: var(--univ-blue);
+  color: #FFFFFF;
+}
+/* --- ログアウトボタン --- */
+/* フォームの中にあるので、aタグと同じ見た目に整える */
+form {
+  margin-bottom: 15px;
+}
+button {
+  width: 100%;
+  padding: 15px;
+  background-color: var(--text-sub); /* ログアウトは少し地味なグレーに */
+  color: #FFFFFF;
+  border: none;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: opacity 0.2s;
+}
+button:hover {
+  opacity: 0.8;
+}
