@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,7 +6,47 @@
     <title>Lobby</title>
 </head>
 <body>
-    <h1>伊仁安堂大学掲示板調査案件</h1>
+    <header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-bottom: 1px solid #ccc;">
+        <h1 style="margin: 0;">伊仁安堂大学掲示板調査案件</h1>
+
+        <div class="user-menu" style="position: relative;">
+            {% if request.user.is_authenticated %}
+                <span id="user-name" style="
+                    cursor: pointer;
+                    font-weight: bold;
+                    border: 1px solid #555;
+                    padding: 6px 12px;
+                    border-radius: 4px;
+                    display: inline-block;
+                    user-select: none;
+                ">
+                    {{ request.user.username }} ▼
+                </span>
+                <div id="logout-dropdown" style="display: none; position: absolute; right: 0; top: calc(100% + 10px); background: white; border: 1px solid #ccc; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 1000;">
+                    <form method="POST" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" style="background: none; border: none; color: red; cursor: pointer; white-space: nowrap;">ログアウト</button>
+                    </form>
+                </div>
+            {% else %}
+                <a href="{% url 'login' %}" style="
+                    text-decoration: none;
+                    color: #333;
+                    font-weight: bold;
+                    border: 1px solid #555;
+                    padding: 6px 12px;
+                    border-radius: 4px;
+                    display: inline-block;
+                ">ログイン</a>
+            {% endif %}
+        </div>
+
+        <style>
+            #user-name:hover {
+                background-color: #eee;
+            }
+        </style>
+    </header>
 
     <h3>調査依頼書</h3>
     <h4>依頼人情報</h4>
@@ -21,29 +62,137 @@
     <p>依頼者が大学掲示板を利用していたところ不審な所が散見された。単独での調査は不可能と考え依頼。</p>
     <h4>調査方法</h4>
     <p>３人一組で調査にあたってもらう。既存グループに参加するか、新たにグループを設立するように。<br>※隠しリンク・ソースコード・ファイルの改編、解析は不要です。目に見える情報から推理してください。</p>
-    
 
     <form method="GET" action="">
         <input type="text" name="q" placeholder="部屋名 または ID 検索">
         <button type="submit">検索</button>
     </form>
 
-    <form method="POST" action="/create/">
+    <form method="POST" action="{% url 'create_room' %}">
         {% csrf_token %}
         <input type="text" name="name" placeholder="部屋名">
         <button type="submit">部屋作成</button>
     </form>
 
+    <hr>
+    <h2>あなたが参加中の調査グループ</h2>
+    <ul id="my-rooms-list">
+        {% for room in my_groups %}
+            <li>
+                {{ room.name }} ({{ room.num_players }} / 3)
+                {% if room.num_players == 3 %}
+                    <span style="color: red;">【満員】</span>
+                {% else %}
+                    <span style="color: green;">【募集中】</span>
+                {% endif %}
+                <a href="{% url 'room_detail' room_id=room.id %}" style="margin-left: 10px;">グループへ</a>
+            </li>
+        {% empty %}
+            <li>現在、参加中のグループはありません</li>
+        {% endfor %}
+    </ul>
+
     <h2>現在募集中の調査グループ</h2>
-    <ul>
+    <ul id="recruiting-rooms-list">
         {% for room in rooms %}
             <li>
                 {{ room.name }} ({{ room.entries.count }} / 3)
-                <a href="/room/{{ room.id }}/">参加</a>
+                <a href="{% url 'room_detail' room_id=room.id %}" style="margin-left: 10px;">参加</a>
             </li>
         {% empty %}
             <li>募集中の部屋はありません</li>
         {% endfor %}
     </ul>
+
+    {{ recruiting_api_url|json_script:"recruiting-api-url" }}
+
+    <script>
+        // 1. 設定データの読み込み（一番最初に実行）
+        const LOBBY_CONFIG = {
+            recruitingApiUrl: JSON.parse(document.getElementById('recruiting-api-url').textContent)
+        };
+
+        // 2. WebSocketの設定
+        const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+        const lobbySocket = new WebSocket(
+            ws_scheme + '://' + window.location.host + '/ws/lobby/'
+        );
+
+        lobbySocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            if (data.type === 'lobby_update') {
+                updateRoomList();
+                updateMyRoomList();
+            }
+        };
+
+        // 3. 募集中の部屋リストを更新する関数
+        async function updateRoomList() {
+            const listElement = document.getElementById('recruiting-rooms-list');
+            if (!listElement) return;
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const query = urlParams.get('q');
+            
+            let apiUrl = LOBBY_CONFIG.recruitingApiUrl;
+            if (query) {
+                const separator = apiUrl.includes('?') ? '&' : '?';
+                apiUrl += `${separator}q=${encodeURIComponent(query)}`;
+            }
+
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                
+                listElement.innerHTML = ''; 
+                if (data.rooms.length === 0) {
+                    listElement.innerHTML = '<li>募集中の部屋はありません</li>';
+                } else {
+                    data.rooms.forEach(room => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `${room.name} (${room.count} / 3) <a href="/room/${room.id}/" style="margin-left: 13.5px;">参加</a>`;
+                        listElement.appendChild(li);
+                    });
+                }
+            } catch (error) {
+                console.error("更新エラー:", error);
+            }
+        }
+
+        // 4. 参加中の部屋リストを更新する関数
+        async function updateMyRoomList() {
+            const listElement = document.getElementById('my-rooms-list');
+            if (!listElement) return;
+            const response = await fetch('{% url "get_my_rooms" %}');
+            if (response.ok) {
+                const data = await response.json();
+                listElement.innerHTML = data.html;
+            }
+        }
+
+        // 5. ページ読み込み完了時の処理
+        document.addEventListener('DOMContentLoaded', () => {
+            updateRoomList();
+            updateMyRoomList();
+
+            // ログアウトメニューの制御
+            const userNameBtn = document.getElementById('user-name');
+            const logoutMenu = document.getElementById('logout-dropdown');
+
+            if (userNameBtn && logoutMenu) {
+                userNameBtn.addEventListener('click', (e) => {
+                    const isHidden = logoutMenu.style.display === 'none' || logoutMenu.style.display === '';
+                    logoutMenu.style.display = isHidden ? 'block' : 'none';
+                    e.stopPropagation(); // 画面クリックイベントが反応するのを防ぐ
+                });
+            }
+        });
+
+        // 画面のどこをクリックしてもメニューを閉じる
+        document.addEventListener('click', () => {
+            const logoutMenu = document.getElementById('logout-dropdown');
+            if (logoutMenu) logoutMenu.style.display = 'none';
+        });
+    </script>
 </body>
 </html>

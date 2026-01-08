@@ -1,0 +1,14 @@
+{% for room in my_groups %}
+    <li>
+        {{ room.name }} ({{ room.num_players }} / 3) 
+        {% if room.num_players == 3 %}
+            <span style="color: red;">【満員】</span>
+        {% else %}
+            <span style="color: green;">【募集中】</span>
+        {% endif %}
+        
+        <a href="{% url 'room_detail' room_id=room.id %}" style="margin-left: 10px;">グループへ</a>
+    </li>
+{% empty %}
+    <li>現在、参加中のグループはありません</li>
+{% endfor %}

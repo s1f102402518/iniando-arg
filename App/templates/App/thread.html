@@ -1,0 +1,104 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>伊仁安堂大学掲示板</title>
+<link rel="stylesheet" href="{% static 'App/css/thread.css' %}">
+</head>
+<body>
+{% if user.is_authenticated %}
+    <input type="hidden" id="current-username" value="{{ user.username }}">
+{% else %}
+    <input type="hidden" id="current-username" value="名無しの学生">
+{% endif %}
+
+<header>伊仁安堂大学掲示板</header>
+
+<div id="input-area">
+    <label for="message-input">投稿内容</label>
+    <textarea id="message-input" placeholder="メッセージを入力" autocomplete="off"></textarea>
+    <button id="send-btn">送信</button>
+</div>
+
+<main>
+    <div id="chat-box">
+
+        <!-- 直書き過去ログ -->
+        <div class="message">
+            <div class="meta">No.1 投稿日：2024/6/1</div>
+            <div class="name">名無しの学生</div>
+            <div class="content">この掲示板、最近静かだな</div>
+        </div>
+        <div class="message">
+            <div class="meta">No.1 投稿日：2024/6/1</div>
+            <div class="name">名無しの学生</div>
+            <div class="content">この掲示板、最近静かだな</div>
+        </div>
+        <div class="message">
+            <div class="meta">No.1 投稿日：2024/6/1</div>
+            <div class="name">名無しの学生</div>
+            <div class="content">この掲示板、最近静かだな</div>
+        </div>
+        <div class="message">
+            <div class="meta">No.1 投稿日：2024/6/1</div>
+            <div class="name">名無しの学生</div>
+            <div class="content">この掲示板、最近静かだな</div>
+        </div>
+        <div class="message">
+            <div class="meta">No.1 投稿日：2024/6/1</div>
+            <div class="name">名無しの学生</div>
+            <div class="content">この掲示板、最近静かだな</div>
+        </div>
+        <div class="message">
+            <div class="meta">No.1 投稿日：2024/6/1</div>
+            <div class="name">名無しの学生</div>
+            <div class="content">この掲示板、最近静かだな</div>
+        </div>
+        <div class="message">
+            <div class="meta">No.1 投稿日：2024/6/1</div>
+            <div class="name">名無しの学生</div>
+            <div class="content">この掲示板、最近静かだな</div>
+        </div>
+        <div class="message">
+            <div class="meta">No.1 投稿日：2024/6/1</div>
+            <div class="name">名無しの学生</div>
+            <div class="content">この掲示板、最近静かだな</div>
+        </div>
+        <div class="message">
+            <div class="meta">No.1 投稿日：2024/6/1</div>
+            <div class="name">名無しの学生</div>
+            <div class="content">この掲示板、最近静かだな</div>
+        </div>
+        <div class="message">
+            <div class="meta">No.1 投稿日：2024/6/1</div>
+            <div class="name">名無しの学生</div>
+            <div class="content">この掲示板、最近静かだな</div>
+        </div>
+        <div class="message">
+            <div class="meta">No.1 投稿日：2024/6/1</div>
+            <div class="name">名無しの学生</div>
+            <div class="content">この掲示板、最近静かだな</div>
+        </div>
+        <div class="message">
+            <div class="meta">No.1 投稿日：2024/6/1</div>
+            <div class="name">名無しの学生</div>
+            <div class="content">この掲示板、最近静かだな</div>
+        </div>
+        <div class="message">
+            <div class="meta">No.1 投稿日：2024/6/1</div>
+            <div class="name">名無しの学生</div>
+            <div class="content">この掲示板、最近静かだな</div>
+        </div>
+
+    </div>
+</main>
+
+
+
+<script>
+    window.ROOM_ID = "{{ room.id }}";
+</script>
+</body>
+<script src="{% static 'App/js/main.js' %}"></script>
+</html>
