@@ -55,47 +55,47 @@ function displayMessage(data) {
 
 socket.onmessage = (e) => {
     const data = JSON.parse(e.data);
-<<<<<<< HEAD
-    const msg = data.message?.trim();
+    if (!data.message) return;
 
-    // ① まず通常メッセージを表示
-=======
-    
-    if (data.message) {
-        // --- 確実な検知のためのクリーンアップ処理 ---
-        
-        // ① 全角英数などを標準的な半角/全角に揃える (normalize)
-        // ② スペース、改行、タブをすべて削除して文字を詰める (replace)
-        const cleanMessage = data.message.normalize("NFKC").replace(/\s+/g, "");
+    const rawMsg = data.message;
+    const msg = rawMsg.trim();
 
-        // ③ 「麹町中学校内申書事件」が含まれているか判定
-        if (cleanMessage.includes(ALERT_WORD)) {
-            showCopyAlertWithButton(ANSWER_URL, ANSWER_URL);
-        }
+    // --- ALERT 用クリーン処理 ---
+    const cleanMessage = rawMsg
+        .normalize("NFKC")
+        .replace(/\s+/g, "");
+
+    // --- hint トリガー ---
+    if (msg === "hint") {
+
+        // ① 通常投稿は表示
+        displayMessage(data);
+
+        // ② 時差表示するヒント設定
+        const hintSequence = [
+            { selector: ".hint-1", delay: 2000 }, // 2秒後
+            { selector: ".hint-2", delay: 3000 }, // 3秒後
+            { selector: ".hint-3", delay: 5000 }, // 5秒後
+        ];
+
+        hintSequence.forEach(({ selector, delay }) => {
+            const el = document.querySelector(selector);
+            if (!el) return;
+
+            setTimeout(() => {
+                el.style.display = "block";
+                chatBox.prepend(el);
+            }, delay);
+        });
+
+        return;
     }
-    
->>>>>>> 81748b1051a0a52e60a50c0ca1ff55fae0254414
+
+    // --- 通常投稿 ---
     displayMessage(data);
 
-    // ② hint 判定（最後に prepend するので最上位になる）
-    if (msg === "hint") {
-        const hint1 = document.querySelector(".hint-1");
-        if (hint1) {
-            hint1.style.display = "block";
-            chatBox.prepend(hint1);
-        }
-    }
-
-    if (msg === "hint2") {
-        const hint2 = document.querySelector(".hint-2");
-        if (hint2) {
-            hint2.style.display = "block";
-            chatBox.prepend(hint2);
-        }
-    }
-
-    // ③ alert（UIに影響しない）
-    if (msg && msg.includes(ALERT_WORD)) {
+    // --- ALERT ---
+    if (cleanMessage.includes(ALERT_WORD)) {
         showCopyAlertWithButton(ANSWER_URL, ANSWER_URL);
     }
 };
