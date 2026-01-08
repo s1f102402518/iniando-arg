@@ -143,21 +143,24 @@ CHANNEL_LAYERS = {
 }
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://brooklynn-domical-eliza.ngrok-free.dev',
+    'https://brooklynn-domical-eliza.ngrok-free.dev', # ngrok用
+    'http://127.0.0.1',
+    'http://localhost',
 ]
 
 
-# 【切り替えスイッチ】ngrokを使う時は True、127.0.0.1を使う時は False に書き換える
-USE_NGROK = True 
+# --- 共通設定（ngrok と 127.0.0.1 両対応） ---
 
-if USE_NGROK:
-    # ngrok（HTTPS）用の設定
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    SECURE_SSL_REDIRECT = False # ngrok側でHTTPS化されるのでDjangoではFalseでOK
-else:
-    # 127.0.0.1（HTTP）用の設定
-    SESSION_COOKIE_SECURE = False
-    CSRF_COOKIE_SECURE = False
-    SECURE_SSL_REDIRECT = False
+# 1. プロキシ経由の HTTPS 認識設定
+# これは 127.0.0.1 で動かしている時は無視されるだけなので、常時オンで OK です。
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# 2. クッキーのセキュア設定を False にする
+# これが最大のポイントです。False にしておけば：
+# - 127.0.0.1（HTTP）でもクッキーが送れる
+# - ngrok（HTTPS）でもクッキーは送れる（HTTPS通信内で送る分には問題ない）
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+
+# 3. HTTPS 強制リダイレクトもオフ
+SECURE_SSL_REDIRECT = False
