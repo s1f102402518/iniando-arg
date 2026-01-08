@@ -104,13 +104,15 @@
         {% endfor %}
     </ul>
 
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const messageType = urlParams.get('message');
-        if (messageType) {
-            window.history.replaceState({}, document.title, window.location.pathname);
-        }
+    {{ recruiting_api_url|json_script:"recruiting-api-url" }}
 
+    <script>
+        // 1. 設定データの読み込み（一番最初に実行）
+        const LOBBY_CONFIG = {
+            recruitingApiUrl: JSON.parse(document.getElementById('recruiting-api-url').textContent)
+        };
+
+        // 2. WebSocketの設定
         const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
         const lobbySocket = new WebSocket(
             ws_scheme + '://' + window.location.host + '/ws/lobby/'
@@ -124,93 +126,73 @@
             }
         };
 
+        // 3. 募集中の部屋リストを更新する関数
         async function updateRoomList() {
             const listElement = document.getElementById('recruiting-rooms-list');
             if (!listElement) return;
-            const response = await fetch('{% url "get_recruiting_rooms" %}');
-            const data = await response.json();
-            listElement.innerHTML = ''; 
-            if (data.rooms.length === 0) {
-                const li = document.createElement('li');
-                li.innerText = '募集中の部屋はありません';
-                listElement.appendChild(li);
-            } else {
-                data.rooms.forEach(room => {
-                    const li = document.createElement('li');
-                    li.innerText = `${room.name} (${room.count} / 3)`;
-                    const link = document.createElement('a');
-                    link.href = `/room/${room.id}/`;
-                    link.innerText = '参加';
-                    link.style.marginLeft = '13.5px';
-                    li.appendChild(link);
-                    listElement.appendChild(li);
-                });
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const query = urlParams.get('q');
+            
+            let apiUrl = LOBBY_CONFIG.recruitingApiUrl;
+            if (query) {
+                const separator = apiUrl.includes('?') ? '&' : '?';
+                apiUrl += `${separator}q=${encodeURIComponent(query)}`;
+            }
+
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                
+                listElement.innerHTML = ''; 
+                if (data.rooms.length === 0) {
+                    listElement.innerHTML = '<li>募集中の部屋はありません</li>';
+                } else {
+                    data.rooms.forEach(room => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `${room.name} (${room.count} / 3) <a href="/room/${room.id}/" style="margin-left: 13.5px;">参加</a>`;
+                        listElement.appendChild(li);
+                    });
+                }
+            } catch (error) {
+                console.error("更新エラー:", error);
             }
         }
 
+        // 4. 参加中の部屋リストを更新する関数
         async function updateMyRoomList() {
             const listElement = document.getElementById('my-rooms-list');
             if (!listElement) return;
             const response = await fetch('{% url "get_my_rooms" %}');
-            const data = await response.json();
             if (response.ok) {
+                const data = await response.json();
                 listElement.innerHTML = data.html;
             }
         }
 
+        // 5. ページ読み込み完了時の処理
         document.addEventListener('DOMContentLoaded', () => {
             updateRoomList();
             updateMyRoomList();
-        });
 
-        // 1. ブラウザのURLから検索ワード（?q=xxx）を取得する
-    const urlParams = new URLSearchParams(window.location.search);
-    const query = urlParams.get('q');
+            // ログアウトメニューの制御
+            const userNameBtn = document.getElementById('user-name');
+            const logoutMenu = document.getElementById('logout-dropdown');
 
-    // 2. APIの基本URLを用意する
-    let apiUrl = LOBBY_CONFIG.recruitingApiUrl;
-
-    // 3. もし検索ワードがあれば、APIのURLの後ろにくっつける
-    if (query) {
-    // URLの末尾に ?q=検索ワード を追加
-    // (すでに?が含まれている場合に備えて区切り文字を判定しています)
-        const separator = apiUrl.includes('?') ? '&' : '?';
-        apiUrl += `${separator}q=${encodeURIComponent(query)}`;
-    }
-
-// 4. 検索ワード付きのURLでAPIを叩く
-    const response = await fetch(apiUrl);
-        const data = await response.json();
-        
-        const userNameBtn = document.getElementById('user-name');
-        const logoutMenu = document.getElementById('logout-dropdown');
-
-        if (userNameBtn && logoutMenu) {
-            userNameBtn.addEventListener('click', function(e) {
-                if (logoutMenu.style.display === 'none' || logoutMenu.style.display === '') {
-                    logoutMenu.style.display = 'block';
-                } else {
-                    logoutMenu.style.display = 'none';
-                }
-                e.stopPropagation(); 
-            });
-        }
-
-        document.addEventListener('click', function() {
-            if (logoutMenu) {
-                logoutMenu.style.display = 'none';
+            if (userNameBtn && logoutMenu) {
+                userNameBtn.addEventListener('click', (e) => {
+                    const isHidden = logoutMenu.style.display === 'none' || logoutMenu.style.display === '';
+                    logoutMenu.style.display = isHidden ? 'block' : 'none';
+                    e.stopPropagation(); // 画面クリックイベントが反応するのを防ぐ
+                });
             }
         });
-    </script>
-    {{ recruiting_api_url|json_script:"recruiting-api-url" }}
 
-    <script>
-    // 定義したデータを取得
-        const LOBBY_CONFIG = {
-            recruitingApiUrl: JSON.parse(document.getElementById('recruiting-api-url').textContent)
-        };
-    
-    // ... (以下既存のスクリプト)
+        // 画面のどこをクリックしてもメニューを閉じる
+        document.addEventListener('click', () => {
+            const logoutMenu = document.getElementById('logout-dropdown');
+            if (logoutMenu) logoutMenu.style.display = 'none';
+        });
     </script>
 </body>
 </html>
