@@ -55,9 +55,26 @@ function displayMessage(data) {
 
 socket.onmessage = (e) => {
     const data = JSON.parse(e.data);
+<<<<<<< HEAD
     const msg = data.message?.trim();
 
     // ① まず通常メッセージを表示
+=======
+    
+    if (data.message) {
+        // --- 確実な検知のためのクリーンアップ処理 ---
+        
+        // ① 全角英数などを標準的な半角/全角に揃える (normalize)
+        // ② スペース、改行、タブをすべて削除して文字を詰める (replace)
+        const cleanMessage = data.message.normalize("NFKC").replace(/\s+/g, "");
+
+        // ③ 「麹町中学校内申書事件」が含まれているか判定
+        if (cleanMessage.includes(ALERT_WORD)) {
+            showCopyAlertWithButton(ANSWER_URL, ANSWER_URL);
+        }
+    }
+    
+>>>>>>> 81748b1051a0a52e60a50c0ca1ff55fae0254414
     displayMessage(data);
 
     // ② hint 判定（最後に prepend するので最上位になる）
