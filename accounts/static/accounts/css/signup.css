@@ -1,0 +1,125 @@
+@charset "utf-8";
+
+/* --- 共通設定：login.cssと同じ世界観の変数 --- */
+:root {
+  --univ-blue: #003366;      /* 鴉ヶ丘大学カラー */
+  --univ-accent: #b30000;    /* 警告・強調色 */
+  --bg-gray: #f0f2f5;        /* 背景の事務的なグレー */
+  --text-main: #333333;
+  --border-color: #cccccc;
+  --font-base: "Yu Gothic", "Meiryo", sans-serif;
+}
+
+/* --- 全体レイアウト --- */
+body {
+  margin: 0;
+  padding: 40px 20px;
+  font-family: var(--font-base);
+  background-color: var(--bg-gray);
+  color: var(--text-main);
+  
+  /* 画面中央に要素を積み上げる */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* --- タイトル（ページ上部） --- */
+h1 {
+  font-size: 1.5rem;
+  color: var(--univ-blue);
+  margin-bottom: 20px;
+  text-align: center;
+  /* 少し威圧感を出すために文字間隔を広げる */
+  letter-spacing: 0.1em; 
+  font-weight: 700;
+}
+
+/* --- 入力エリア（白い箱） --- */
+/* HTMLにcontainerがないため、formタグ自体をカード化します */
+form {
+  background-color: #ffffff;
+  width: 100%;
+  max-width: 500px; /* ログインより項目が多い想定で少し幅広に */
+  padding: 40px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  border-radius: 2px; /* 角丸を小さくして事務的に */
+  margin-bottom: 20px;
+}
+
+/* --- フォーム内の各要素 (Djangoのas_p対応) --- */
+form p {
+  margin-bottom: 20px;
+}
+
+/* ラベル：少し小さくして「項目名」っぽく */
+form label {
+  display: block;
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: var(--univ-blue); /* 少し青みを入れてシステム感を出す */
+  margin-bottom: 5px;
+}
+
+/* 入力欄：login.cssと完全に統一 */
+form input[type="text"],
+form input[type="email"],
+form input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 2px;
+  box-sizing: border-box; /* パディングを含めた幅計算 */
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+form input:focus {
+  outline: none;
+  border-color: var(--univ-blue);
+  background-color: #fafdff;
+}
+
+/* ヘルプテキスト（Djangoが出す補足説明）への対応 */
+.helptext {
+  display: block;
+  font-size: 0.75rem;
+  color: #666;
+  margin-top: 4px;
+}
+
+/* --- 送信ボタン --- */
+input[type="submit"] {
+  width: 100%;
+  padding: 14px;
+  background-color: var(--univ-blue);
+  color: #ffffff;
+  border: none;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 2px;
+  margin-top: 10px;
+  letter-spacing: 0.05em;
+  transition: opacity 0.2s;
+}
+
+input[type="submit"]:hover {
+  opacity: 0.9;
+}
+
+/* --- フッターリンク --- */
+a {
+  color: #666;
+  text-decoration: none;
+  font-size: 0.9rem;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+a:hover {
+  color: var(--univ-blue);
+  border-bottom-color: var(--univ-blue);
+}

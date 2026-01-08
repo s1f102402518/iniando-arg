@@ -1,30 +1,222 @@
-/* --- room_detail.css --- */
+@charset "utf-8";
 
+/* --- 共通設定 --- */
+:root {
+  --univ-blue: #003366;      /* 鴉ヶ丘大学カラー */
+  --univ-bg: #f0f2f5;        /* 背景グレー */
+  --text-main: #333333;
+  --text-sub: #666666;
+  --border-color: #cccccc;
+  --accent-red: #b30000;     /* 解散・脱退などの危険色 */
+  --accent-green: #28a745;   /* 安全色 */
+  --font-base: "Yu Gothic", "Meiryo", sans-serif;
+  --font-mono: "Courier New", Consolas, monospace; /* ID用 */
+}
+
+/* --- 全体レイアウト --- */
 body {
-    background: #f3f5f7;
-    font-family: "MS PGothic", sans-serif;
+  margin: 0;
+  padding: 40px 20px;
+  padding-bottom: 80px;
+  font-family: var(--font-base);
+  background-color: var(--univ-bg);
+  color: var(--text-main);
+  
+  /* 中央揃えのレイアウト */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
 }
 
-.container {
-    width: 800px;
-    margin: 30px auto;
-    background: #fff;
-    padding: 20px;
-    border: 1px solid #aaa;
+/* 各要素の幅を揃えるコンテナ的な制御 */
+body > * {
+  width: 100%;
+  max-width: 600px; /* ロビーより少し狭くして情報を凝縮 */
+  box-sizing: border-box;
 }
 
-.member-list {
-    margin-top: 20px;
-    padding: 10px;
-    background: #f9f9f9;
-    border: 1px dotted #bbb;
+/* --- タイトル周り --- */
+h1 {
+  font-size: 1.1rem;
+  color: var(--text-sub);
+  text-align: center;
+  margin-bottom: 10px;
+  font-weight: normal;
 }
 
-.name {
-    padding: 5px 0;
+h2 {
+  font-size: 1.5rem;
+  color: var(--univ-blue);
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--univ-blue);
 }
 
-.full {
-    color: red;
-    font-weight: bold;
+/* --- ID表示エリア --- */
+/* <p>タグの中にIDとボタンがあるので、それを情報パネル化します */
+h2 + p {
+  background-color: #ffffff;
+  padding: 15px;
+  border: 1px solid var(--border-color);
+  border-left: 5px solid var(--text-sub); /* グレーのラインで「データ」感を出す */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* ID番号のフォント */
+#room-id-value {
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  margin: 0 10px;
+  color: var(--univ-blue);
+}
+
+/* コピーボタン（HTMLのインラインスタイルを上書きしてデザイン統一） */
+button[onclick="copyRoomId()"] {
+  background-color: #e9ecef !important; /* インラインスタイルを強制上書き */
+  color: var(--text-main);
+  border: 1px solid var(--border-color) !important;
+  border-radius: 4px;
+  padding: 5px 10px;
+  transition: all 0.2s;
+}
+
+button[onclick="copyRoomId()"]:hover {
+  background-color: #dde2e6 !important;
+  transform: translateY(-1px);
+}
+
+/* --- メンバーリストエリア --- */
+h3 {
+  font-size: 1.1rem;
+  color: var(--text-main);
+  margin-bottom: 10px;
+  border-left: 4px solid var(--univ-blue);
+  padding-left: 10px;
+  background: none; /* lobby.cssの影響を受けないようリセット */
+}
+
+/* 人数カウント */
+#member-count {
+  font-weight: bold;
+  color: var(--univ-blue);
+}
+
+#member-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 30px 0;
+  background-color: #ffffff;
+  border: 1px solid var(--border-color);
+}
+
+#member-list li {
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+}
+
+#member-list li:last-child {
+  border-bottom: none;
+}
+
+/* メンバー名の前にアイコン的なものを置く */
+#member-list li::before {
+  content: "👤";
+  margin-right: 10px;
+  opacity: 0.6;
+}
+
+/* --- 区切り線 --- */
+hr {
+  border: none;
+  border-top: 1px dashed var(--border-color);
+  margin: 20px 0;
+  width: 100%;
+}
+
+/* --- グループ専用掲示板へのリンク（最重要アクション） --- */
+/* 説明文 */
+h3 + p {
+  font-size: 0.9rem;
+  color: var(--text-sub);
+  margin-bottom: 10px;
+}
+
+/* リンクボタンを巨大化して目立たせる */
+a[target="_blank"] {
+  display: block;
+  width: 100%;
+  padding: 20px;
+  background-color: var(--univ-blue);
+  color: #ffffff;
+  text-decoration: none;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  border-radius: 2px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: all 0.2s;
+  letter-spacing: 0.05em;
+  
+  /* 「進む」感を出すアイコン */
+  position: relative;
+}
+
+a[target="_blank"]::after {
+  content: " ➔";
+  font-weight: normal;
+}
+
+a[target="_blank"]:hover {
+  background-color: #004080; /* 少し明るく */
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+/* --- 解散・脱退ボタン（危険エリア） --- */
+form {
+  margin-top: 10px;
+}
+
+/* 解散/脱退ボタン共通 */
+form button {
+  width: 100%;
+  padding: 12px;
+  background-color: #fff;
+  color: var(--text-sub);
+  border: 1px solid var(--border-color);
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+
+/* ホバー時に赤くして警告 */
+form button:hover {
+  background-color: #fff5f5;
+  color: var(--accent-red);
+  border-color: var(--accent-red);
+}
+
+/* --- ロビーに戻るリンク --- */
+p a[href*="lobby"] {
+  display: inline-block;
+  margin-top: 20px;
+  color: var(--text-sub);
+  text-decoration: underline;
+  font-size: 0.9rem;
+}
+
+p a[href*="lobby"]:hover {
+  color: var(--text-main);
 }
