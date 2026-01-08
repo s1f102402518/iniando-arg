@@ -55,13 +55,20 @@ function displayMessage(data) {
 
 socket.onmessage = (e) => {
     const data = JSON.parse(e.data);
+    
+    if (data.message) {
+        // --- 確実な検知のためのクリーンアップ処理 ---
+        
+        // ① 全角英数などを標準的な半角/全角に揃える (normalize)
+        // ② スペース、改行、タブをすべて削除して文字を詰める (replace)
+        const cleanMessage = data.message.normalize("NFKC").replace(/\s+/g, "");
 
-    if (data.message && data.message.includes(ALERT_WORD)) {
-    showCopyAlertWithButton(
-        ANSWER_URL,   // ← 画面に表示される内容
-        ANSWER_URL    // ← コピーされる内容
-    );
-}
+        // ③ 「麹町中学校内申書事件」が含まれているか判定
+        if (cleanMessage.includes(ALERT_WORD)) {
+            showCopyAlertWithButton(ANSWER_URL, ANSWER_URL);
+        }
+    }
+    
     displayMessage(data);
 };
 
