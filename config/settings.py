@@ -146,9 +146,18 @@ CSRF_TRUSTED_ORIGINS = [
     'https://brooklynn-domical-eliza.ngrok-free.dev',
 ]
 
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# これを追加：リンク生成をすべて HTTPS に強制する
-SECURE_SSL_REDIRECT = False
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+# 【切り替えスイッチ】ngrokを使う時は True、127.0.0.1を使う時は False に書き換える
+USE_NGROK = True 
+
+if USE_NGROK:
+    # ngrok（HTTPS）用の設定
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = False # ngrok側でHTTPS化されるのでDjangoではFalseでOK
+else:
+    # 127.0.0.1（HTTP）用の設定
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+    SECURE_SSL_REDIRECT = False
