@@ -1,7 +1,7 @@
 console.log("main.js loaded");
 
 const roomID = window.ROOM_ID;
-const ALERT_WORD = "麴町中学校内申書事件";
+const ALERT_WORD = "麹町中学校内申書事件";
 const ANSWER_URL = "https://example.com/answer";
 
 
