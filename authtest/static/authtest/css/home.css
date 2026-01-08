@@ -68,7 +68,6 @@ a {
   position: relative;
 }
 a::after {
-  content: ":再生ボタン:";
   position: absolute;
   right: 15px;
   font-size: 0.8em;
