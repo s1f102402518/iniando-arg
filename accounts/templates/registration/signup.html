@@ -1,20 +1,50 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
+<head>
     <meta charset="UTF-8">
-    <title>Signup</title>
+    <title>鴉ヶ丘大学 - サインアップ</title>
     <link rel="stylesheet" href="{% static 'accounts/css/signup.css' %}">
-  </head>
-  <body>
-    <h1>サインアップ</h1>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <p class="system-info">
+                <b>現在時刻: <span id="realtime-clock">読み込み中...</span> JST</b> | <b>学内認証システム経由</b>
+            </p>
+        </header>
 
-    <form method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <input type="submit" value="サインアップ" />
-    </form>
+        <main>
+            <h1>学生アカウント新規登録</h1>
 
-    <p><a href="{% url 'home' %}">ホーム</a></p>
-  </body>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="サインアップ" />
+            </form>
+
+            <div class="footer-links">
+                <a href="{% url 'home' %}">トップページへ戻る</a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+
+            const timeString = `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+            const clockEl = document.getElementById('realtime-clock');
+            if(clockEl) clockEl.innerText = timeString;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body>
 </html>

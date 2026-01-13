@@ -45,6 +45,9 @@ header {
   background-color: #e9ecef;
   border-bottom: 1px solid var(--border-color);
   padding: 8px 15px;
+  display: flex;
+  justify-content: center; 
+  align-items: center;
 }
 
 .system-info {
@@ -52,8 +55,8 @@ header {
   font-size: 0.75rem; /* 小さくしてログっぽく */
   color: var(--text-sub);
   margin: 0;
-  text-align: right;
   letter-spacing: -0.5px;
+  white-space: nowrap;
 }
 
 /* --- メインコンテンツエリア --- */
