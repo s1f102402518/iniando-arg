@@ -1,0 +1,81 @@
+@charset "utf-8";
+
+/* --- 共通設定 --- */
+:root {
+  --univ-blue: #003366;       /* 鴉ヶ丘大学カラー */
+  --univ-bg: #f0f2f5;         /* 背景グレー */
+  --text-main: #333333;
+  --text-sub: #666666;
+  --border-color: #cccccc;
+  --font-base: "Yu Gothic", "Meiryo", sans-serif;
+}
+
+/* --- 全体レイアウト --- */
+body {
+  margin: 0;
+  padding: 40px 20px;
+  font-family: var(--font-base);
+  background-color: var(--univ-bg);
+  color: var(--text-main);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* コンテナ */
+body > * {
+  width: 100%;
+  max-width: 600px;
+  box-sizing: border-box;
+}
+
+/* --- タイトル --- */
+h1 {
+  font-size: 1.3rem;
+  color: var(--univ-blue);
+  text-align: center;
+  margin-bottom: 30px;
+  font-weight: bold;
+  border-bottom: 2px solid var(--univ-blue);
+  padding-bottom: 10px;
+}
+
+/* --- セクション --- */
+.section {
+  background-color: #ffffff;
+  padding: 20px;
+  border: 1px solid var(--border-color);
+  border-left: 5px solid var(--univ-blue);
+  margin-bottom: 30px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* --- 注意書き --- */
+.section.notice {
+  background-color: #fff8e8;
+  border-left-color: #ff9900;
+  color: var(--text-sub);
+  font-size: 0.9rem;
+  padding: 15px;
+  margin-bottom: 30px;
+}
+
+/* --- ログ表示 --- */
+.log {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border: 1px solid #ddd;
+  font-family: "Courier New", Consolas, monospace;
+  color: var(--univ-blue);
+  margin-top: 10px;
+  white-space: pre-wrap; /* 改行やスペースを維持 */
+}
+
+/* --- テキスト調整 --- */
+p {
+  margin: 0 0 10px 0;
+}

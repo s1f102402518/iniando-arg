@@ -1,0 +1,134 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>評価・選抜ログ（Cページ）</title>
+<link rel="stylesheet" href="{% static 'App/css/style.css' %}">
+<style>
+/* --- Cページ専用拡張 --- */
+#evaluation-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+#evaluation-table th,
+#evaluation-table td {
+  border: 1px solid var(--border-color);
+  padding: 8px;
+  text-align: center;
+}
+
+#evaluation-table th {
+  background-color: var(--univ-blue);
+  color: #ffffff;
+  font-weight: normal;
+}
+
+#evaluation-table td.student-id {
+  color: rgb(173, 55, 70);
+  font-weight: bold;
+}
+
+
+.internal-comment {
+  font-size: 0.85rem;
+  color: #555;
+  background-color: #f0f2f5;
+  padding: 10px;
+  border-left: 3px solid var(--univ-blue);
+  margin-top: 15px;
+  white-space: pre-wrap;
+}
+
+.secret-comment {
+  color: #f0f2f5; /* 背景と同化させて隠す */
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+</style>
+</head>
+<body>
+
+<h1>〈推薦候補者リスト〉</h1>
+
+<div class="section">
+  <p>p傾向が一定以上の学生の思考傾向スコア</p>
+  <div class="secret-comment">
+    私もここに入れられていたのかも
+  </div>
+  <table id="evaluation-table">
+    <thead>
+      <tr>
+        <th>学生ID</th>
+        <th>従順</th>
+        <th>協調</th>
+        <th>書き込み頻度</th>
+        <th>反応速度</th>
+        <th>同調率</th>
+        <th>反論率</th>
+        <th>特定話題関心度</th>
+        <th>p傾向</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="student-id">u3068</td>
+        <td>87</td>
+        <td>91</td>
+        <td>42</td>
+        <td>平均30秒</td>
+        <td>88%</td>
+        <td>3%</td>
+        <td>高</td>
+        <td>極めて高い</td>
+      </tr>
+      <tr>
+        <td class="student-id">u308a</td>
+        <td>72</td>
+        <td>84</td>
+        <td>35</td>
+        <td>平均45秒</td>
+        <td>75%</td>
+        <td>6%</td>
+        <td>中</td>
+        <td>極めて高い</td>
+      </tr>
+      <tr>
+        <td class="student-id">u3067</td>
+        <td>94</td>
+        <td>97</td>
+        <td>50</td>
+        <td>平均20秒</td>
+        <td>92%</td>
+        <td>1%</td>
+        <td>高</td>
+        <td>高い</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="secret-comment">
+    研究用の仮データじゃなかった
+  </div>
+  <div class="internal-comment">
+    指標  
+    - 従順：掲示板指示への素直さ  
+    - 協調：グループスレでの同調度  
+    - 競争適性：話題先取りや推薦枠争奪行動  
+    - 書き込み頻度：一定期間の投稿数  
+    - 反応速度：投稿までの平均時間  
+    - 同調率：他者意見に沿った割合  
+    - 反論率：否定的表現の使用割合  
+    - 特定話題関心度：指定テーマへの継続的関心度
+  </div>
+  <div class="secret-comment">
+    過去の事件がその証拠
+  </div>
+
+</div>
+
+<script src="{% static 'App/js/main.js' %}"></script>
+</body>
+</html>

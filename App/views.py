@@ -102,18 +102,26 @@ def room_detail(request, room_id):
         "members": room.entries.all()
     })
 
+import hashlib
+
 def thread(request, room_id):
-    """調査本番（掲示板・チャット）画面"""
     if not request.user.is_authenticated:
         return redirect("login")
-    
+
     room = get_object_or_404(Room, id=room_id)
-    
-    # 参加していないユーザーは入れない
+
     if not room.entries.filter(nickname=request.user.username).exists():
         return redirect("room_detail", room_id=room.id)
 
-    return render(request, "App/thread.html", {"room": room})
+    username = request.user.username
+    hash_value = int(hashlib.sha256(username.encode()).hexdigest(), 16)
+    order = hash_value % 3  # 0,1,2
+
+    return render(request, "App/thread.html", {
+        "room": room,
+        "order": order,
+    })
+
 
 # ==========================================
 # 操作アクション (POST/Redirect)
@@ -205,7 +213,6 @@ def get_recruiting_rooms(request):
     return JsonResponse({'rooms': room_data})
 
 def get_my_rooms(request):
-    """自分が参加中の部屋リストをHTML片で返す"""
     if not request.user.is_authenticated:
         return JsonResponse({'error': 'Not authenticated'}, status=401)
 
@@ -216,7 +223,6 @@ def get_my_rooms(request):
     return JsonResponse({'html': html})
 
 def get_room_members(request, room_id):
-    """特定の部屋のメンバーリストを取得"""
     room = get_object_or_404(Room, id=room_id)
     members = room.entries.all()
     member_list = [member.nickname for member in members]
@@ -225,3 +231,82 @@ def get_room_members(request, room_id):
         'members': member_list,
         'count': len(member_list)
     })
+import random
+
+def generate_scores(user_order=None, judgment=None):
+
+    if user_order is not None:
+        if user_order == 0:
+            judgment_value= "A"
+            p_score = 0.89
+            n_score = -0.70
+        elif user_order == 1:
+            judgment_value= "B"
+            p_score = 0.49
+            n_score = -0.41
+        elif user_order == 2:
+            judgment_value= "C"
+            p_score = -0.37
+            n_score = 0.78
+
+    elif judgment is not None:
+        judgment_value = judgment
+        if judgment_value == "A":
+            p_score = round(random.uniform(0.5, 1), 2)
+            n_score = round(random.uniform(-1, -0.5), 2)
+        elif judgment_value == "B":
+            p_score = round(random.uniform(0, 0.5), 2)
+            n_score = round(random.uniform(-0.5, 0), 2)
+        else:  # C
+            p_score = round(random.uniform(-1, 0), 2)
+            n_score = round(random.uniform(0, 1), 2)
+    else:
+        p_score = 0
+        n_score = 0
+        judgment_value = "A"
+
+    return p_score, n_score, judgment_value
+
+
+def a_page(request, room_id):
+    room = get_object_or_404(Room, id=room_id)
+    entries = room.entries.all()
+
+    users = []
+
+    for idx, entry in enumerate(entries):
+        user_order = getattr(entry, 'user_order', idx % 3)
+        p_score, n_score, judgment = generate_scores(user_order=user_order)
+        users.append({
+            "nickname": entry.nickname,
+            "name": "■■■■",
+            "p_score": p_score,
+            "n_score": n_score,
+            "judgment": judgment,
+            "user_order": user_order
+        })
+        dummy_nicknames = [
+        "a_158", "coffee_lover", "digital_kirai", "nightowl_21",
+        "hobby_yuki", "dooog"
+        ]
+    for i in range(6):
+        judgment = random.choice(["A", "B", "C"])
+        p_score, n_score, judgment_value = generate_scores(judgment=judgment)
+        users.append({
+            "nickname": dummy_nicknames[i],
+            "name": "■■■■",
+            "p_score": p_score,
+            "n_score": n_score,
+            "judgment": judgment_value,
+            "user_order": i % 3
+        })
+
+    return render(request, "App/a.html", {"users": users, "room": room})
+
+def b_page(request, room_id):
+    room = get_object_or_404(Room, id=room_id)
+    return render(request, "App/b.html", {"room": room})
+
+def c_page(request, room_id):
+    room = get_object_or_404(Room, id=room_id)
+    return render(request, "App/c.html", {"room": room})

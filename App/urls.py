@@ -11,4 +11,7 @@ urlpatterns = [
     path('api/recruiting_rooms/', views.get_recruiting_rooms, name='get_recruiting_rooms'),
     path('thread/<uuid:room_id>/', views.thread, name='thread'),
     path('get_my_rooms/', views.get_my_rooms, name='get_my_rooms'),
+    path("a/<uuid:room_id>/", views.a_page, name="a_page"),
+    path("b/<uuid:room_id>/", views.b_page, name="b_page"),
+    path("c/<uuid:room_id>/", views.c_page, name="c_page"),
 ]

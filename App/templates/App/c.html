@@ -1,0 +1,161 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>不適合者処理ログ</title>
+<link rel="stylesheet" href="{% static 'App/css/style.css' %}">
+<style>
+
+h1 {
+    color: #ffffff;
+    border-bottom: 2px solid #a44643;
+}
+
+body {
+  background-color: #000;
+  font-family: sans-serif;
+}
+
+.section {
+    background-color: #555;
+    color: #ffffff;
+    border: none;
+
+}
+.log {
+    color: #555;
+}
+
+#failure-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+#failure-table th,
+#failure-table td {
+  border: 1px solid var(--border-color);
+  padding: 8px;
+  text-align: center;
+}
+
+#failure-table th {
+  background-color: #a44643; /* 赤系で注意色 */
+  color: #ffffff;
+  font-weight: normal;
+}
+
+.internal-comment {
+  font-size: 0.85rem;
+  color: #ffffff;
+  background-color: #555;
+  padding: 10px;
+  border-left: 3px solid #a44643;
+  margin-top: 15px;
+  white-space: pre-wrap;
+}
+
+.hidden-comment {
+  color: #f9f9f9;
+}
+</style>
+</head>
+<body>
+
+<h1>不適合者処理ログ</h1>
+
+<div class="section">
+  <p>n傾向をもとに分類し問題を起こした利用者の記録：抜粋</p>
+
+  <table id="failure-table">
+    <thead>
+      <tr>
+        <th>学生ID</th>
+        <th>従順度</th>
+        <th>協調性</th>
+        <th>競争性</th>
+        <th>n傾向</th>
+        <th>注意点</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="student-id">101B</td>
+        <td>32</td>
+        <td>45</td>
+        <td>29</td>
+        <td>極めて高い</td>
+        <td>特定話題への反発・異議表明が多い</td>
+      </tr>
+      <tr>
+        <td class="student-id">102B</td>
+        <td>28</td>
+        <td>38</td>
+        <td>41</td>
+        <td>高い</td>
+        <td>投稿が遅く、指示に従う速度が低い</td>
+      </tr>
+      <tr>
+        <td class="student-id">103B</td>
+        <td>40</td>
+        <td>50</td>
+        <td>35</td>
+        <td>中</td>
+        <td>一定話題への関心は低く、独自行動が目立つ</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="internal-comment">
+    指標： 
+    - 従順度：掲示板の指示への対応  
+    - 協調性：スレッド内での他者への同調度  
+    - 競争性：先行行動や注目獲得行動  
+    - 投稿頻度：行動の活発さを測定  
+  </div>
+
+<div class="log">
+<details>
+<summary><strong>過去の事件：調査書試験運用の失敗事例</strong></summary>
+
+■■区立■■中学校での内部評価試験運用に関する記録
+
+概要：
+在籍生徒の発言傾向や行動パターンをもとに、思想傾向、集団への従順度、協調性、特定話題への関心度などを独自の基準で分類する試験運用を実施。
+本来は学内非公開で運用される予定だったが、一部内容が外部に流出し、運用停止を余儀なくされた。
+
+経過：
+試験運用開始直後、想定外の反応を示す生徒が現れ、結果の一部が保護者や第三者の目に触れた。
+このため、一部保護者からの問い合わせや内部告発が発生。
+学校機関紙での報道や教育委員会への報告も行われ、最終的には裁判沙汰にまで発展した。
+急遽調整措置がとられ、記録自体は保持されたものの、公開は停止。
+分類基準や個別評価数値が外部に伝わることはなかった。
+
+観察結果：  
+- 思想や行動パターンの偏りが予想以上に顕在化
+- 分類基準から逸脱する生徒が複数確認され、評価の正確性に疑義
+- 不適合者は分類自体に不満を抱き、周りに対しても悪影響を与える傾向が見られた
+
+教訓：  
+- 紙媒体では露見リスクが高く、非公開運用でも完全には守れない
+- 内部調整だけでは想定外の情報流出を完全に防げない  
+- 学生にあえて利用させることで違和感をなくし、通報のリスクを減らす
+- 不適合者は早めに取り除くべきである
+
+記録者コメント：  
+当時の運用データは最終評価には使用されなかったが、  
+現行の本掲示板型評価システム設計における注意喚起事例として参照される。  
+この経験から、評価対象の行動を日常に溶け込ませ、秘匿性を高める必要性が認識された。
+<br>
+告発など二度とあってはならない。
+
+</details>
+</div>
+
+</div>
+
+<script src="{% static 'App/js/main.js' %}"></script>
+</body>
+</html>

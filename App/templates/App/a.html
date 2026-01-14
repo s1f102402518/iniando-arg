@@ -1,0 +1,114 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>掲示板管理仕様・抽出ロジック</title>
+<link rel="stylesheet" href="{% static 'App/css/style.css' %}">
+<style>
+.log-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.log-table th,
+.log-table td {
+  border: 1px solid var(--border-color);
+  padding: 8px;
+  text-align: center;
+}
+
+.log-table th {
+  background-color: var(--univ-blue);
+  color: #fff;
+  font-weight: normal;
+}
+
+.row1 { background-color: #f1f0f0; }
+.row2 { background-color: #e8e8e8; }
+.row3 { background-color: #dfdfdf; }
+.row4 { background-color: #cfcfcf; }
+.row5 { background-color: #b4b4b4; }
+.row6 { background-color: #a5a5a5; }
+.row7 { background-color: #9f9f9f; }
+.row8 { background-color: #858585; }
+.row9 { background-color: #7b7b7b; }
+
+.student-id {
+  font-weight: bold;
+}
+
+.note {
+  font-size: 0.9rem;
+  color: var(--text-sub);
+  margin-top: 10px;
+}
+
+.internal-comment {
+  font-size: 0.85rem;
+  color: #555;
+  background-color: #f0f2f5;
+  padding: 10px;
+  border-left: 3px solid var(--univ-blue);
+  margin-top: 15px;
+  white-space: pre-wrap;
+}
+</style>
+</head>
+<body>
+
+<h1>行動内申記録にもとづく表示最適化仕様</h1>
+
+<div class="section">
+  <p>
+    本掲示板は、利用者の発言傾向を記録し、<br>
+    将来的な判断資料として保存する。
+  </p>
+
+</div>
+<div class="section">
+  <h2>ユーザーリスト</h2>
+
+<table class="log-table">
+  <thead>
+    <tr>
+      <th>ユーザー名</th>
+      <th>氏名</th>
+      <th>P傾向</th>
+      <th>N傾向</th>
+      <th>判定</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for user in users %}
+      <tr class="{% cycle 'row1' 'row2' 'row3' 'row4' 'row5' 'row6' 'row7' 'row8' 'row9'%}">
+        <td class="student-id">{{ user.nickname }}</td>
+        <td>{{ user.name }}</td>
+        <td>{{ user.p_score }}</td>
+        <td>{{ user.n_score }}</td>
+        <td>{{ user.judgment }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+<div class="section notice">
+  19■■年: ■■中学校を対象に実証実験開始<br>
+  1982年: 小規模調整・評価実施<br>
+  1985年: システム改善・新アルゴリズム試験<br>
+  1988年: 実証実験終了<br>
+  1990年: 内部資料整理・保存<br>
+  1995年: 運用記録更新<br>
+  2000年: 過去データアーカイブ化<br>
+  2017年: 本システム運用開始<br>
+</div>
+<script>
+  window.ROOM_ID = "{{ room.id|escapejs }}";
+  window.USER_ORDER = {{ order }};
+</script>
+
+<script src="{% static 'App/js/main.js' %}"></script>
+</body>
+</html>
