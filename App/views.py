@@ -110,12 +110,13 @@ def thread(request, room_id):
 
     room = get_object_or_404(Room, id=room_id)
 
+    user_entry = room.entries.filter(nickname=request.user.username).first()
+
     if not room.entries.filter(nickname=request.user.username).exists():
         return redirect("room_detail", room_id=room.id)
 
-    username = request.user.username
-    hash_value = int(hashlib.sha256(username.encode()).hexdigest(), 16)
-    order = hash_value % 3  # 0,1,2
+    all_entries = list(room.entries.all().order_by('id')) 
+    order = all_entries.index(user_entry) % 3  # 0,1,2
 
     return render(request, "App/thread.html", {
         "room": room,
