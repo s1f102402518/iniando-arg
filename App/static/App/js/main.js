@@ -123,6 +123,49 @@ document.addEventListener("DOMContentLoaded", () => {
             chatBox.prepend(el);
         }, item.delay);
     });
+
+
+    // --- msg-naishin系（内申イベント後 + special分岐） ---
+    const naishinMessages = [
+        { id: "msg-naishin", order: 1, delay: 56000 },
+        { id: "msg-naishin2", order: 0, delay: 60000 },
+        { id: "msg-naishin3", order: 1, delay: 64000 },
+        { id: "msg-naishin4", order: 2, delay: 68000 },
+        { id: "msg-naishin5", order: 2, delay: 72000 },
+        { id: "msg-naishin6", order: 1, delay: 76000 },
+        { id: "msg-naishin7", order: 2, delay: 80000 },
+    ];
+
+    naishinMessages.forEach(item => {
+        const el = document.getElementById(item.id);
+        if (!el) return;
+        setTimeout(() => {
+            if (!window._trigger_内申) return; // 内申イベント後のみ
+            if (order !== item.order) return;
+            el.style.display = "block";
+            chatBox.prepend(el);
+        }, item.delay);
+    });
+
+    // --- msg-chiyoda（千代田イベント後 + special分岐） ---
+    const chiyoda = document.getElementById("msg-chiyoda");
+    if (chiyoda) {
+        setTimeout(() => {
+            if (!window._trigger_千代田) return; // 千代田イベント後
+            if (order !== 2) return;
+            chiyoda.style.display = "block";
+            chatBox.prepend(chiyoda);
+        });
+    }
+
+    const toride = document.getElementById("msg-toride");
+    if (toride) {
+        setTimeout(() => {
+            if (!window._trigger_内申) return;
+            toride.style.display = "block";
+            chatBox.prepend(toride);
+        });
+    }
 });
 
 // --- WebSocket メッセージ受信 ---

@@ -14,4 +14,5 @@ urlpatterns = [
     path("a/<uuid:room_id>/", views.a_page, name="a_page"),
     path("b/<uuid:room_id>/", views.b_page, name="b_page"),
     path("c/<uuid:room_id>/", views.c_page, name="c_page"),
+    path("answer/secret/", views.last, name="last"),
 ]

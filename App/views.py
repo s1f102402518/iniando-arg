@@ -280,28 +280,17 @@ def generate_scores(user_order=None, judgment=None):
 
 def a_page(request, room_id):
     room = get_object_or_404(Room, id=room_id)
-    
-    # -------------------------------------------------------
-    # 1. 閲覧している自分自身の order を確定させる (0, 1, 2)
-    # -------------------------------------------------------
     user_entry = room.entries.filter(nickname=request.user.username).first()
     if not user_entry:
         return redirect("room_detail", room_id=room.id)
 
-    # この部屋の全メンバーを入室順(id順)に並べる
     all_real_entries = list(room.entries.all().order_by('id'))
     
-    # 自分の order を特定 (HTML側の {{ order }} に渡す用)
     my_order = all_real_entries.index(user_entry) % 3
 
-    # -------------------------------------------------------
-    # 2. リストに表示するユーザーデータの作成
-    # -------------------------------------------------------
     users = []
 
-    # 実際の参加者を追加
     for entry in all_real_entries:
-        # 入室順に基づいた一意の order を計算
         user_order = all_real_entries.index(entry) % 3 
         
         p_score, n_score, judgment = generate_scores(user_order=user_order)
@@ -314,7 +303,6 @@ def a_page(request, room_id):
             "user_order": user_order
         })
 
-    # ダミーユーザーを追加 (固定のニックネーム)
     dummy_nicknames = [
         "a_158", "coffee_lover", "digital_kirai", "nightowl_21",
         "hobby_yuki", "dooog"
@@ -322,7 +310,6 @@ def a_page(request, room_id):
     for i in range(6):
         judgment = random.choice(["A", "B", "C"])
         p_score, n_score, judgment_value = generate_scores(judgment=judgment)
-        # ダミーの order は 0,1,2 の繰り返しで OK
         users.append({
             "nickname": dummy_nicknames[i],
             "name": "■■■■",
@@ -332,13 +319,10 @@ def a_page(request, room_id):
             "user_order": i % 3
         })
 
-    # -------------------------------------------------------
-    # 3. テンプレートに my_order を含めて渡す
-    # -------------------------------------------------------
     return render(request, "App/a.html", {
         "users": users, 
         "room": room, 
-        "order": my_order  # これが a.html の最後にある {{ order }} に入ります
+        "order": my_order
     })
 
 def b_page(request, room_id):
@@ -348,3 +332,6 @@ def b_page(request, room_id):
 def c_page(request, room_id):
     room = get_object_or_404(Room, id=room_id)
     return render(request, "App/c.html", {"room": room})
+
+def last(request):
+    return render(request, "App/lastpage.html")
