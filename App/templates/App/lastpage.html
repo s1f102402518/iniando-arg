@@ -1,33 +1,133 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>記録</title>
-<link rel="stylesheet" href="style.css">
+<title>調査完了</title>
+<style>
+    body {
+        background: #0f0f12;
+        color: #e6e6e6;
+        font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+        margin: 0;
+        padding: 0;
+        line-height: 1.9;
+    }
+
+    .container {
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 80px 24px 120px;
+    }
+
+    .title {
+        text-align: center;
+        font-size: 48px;
+        letter-spacing: 0.2em;
+        margin-bottom: 80px;
+        font-weight: bold;
+    }
+
+    h2 {
+        margin-top: 80px;
+        margin-bottom: 24px;
+        font-size: 22px;
+        border-left: 4px solid #888;
+        padding-left: 12px;
+    }
+
+    p {
+        margin: 18px 0;
+        white-space: pre-wrap;
+    }
+
+    .quote {
+        margin: 32px 0;
+        padding-left: 20px;
+        border-left: 2px solid #555;
+        color: #ccc;
+    }
+
+    .faint {
+        color: #9a9a9a;
+        font-size: 14px;
+    }
+
+    .hidden-name {
+        letter-spacing: 0.3em;
+    }
+
+    .end {
+        margin-top: 120px;
+        text-align: center;
+        color: #aaa;
+        font-size: 14px;
+    }
+</style>
 </head>
 <body>
 
-<h1>記録</h1>
+<div class="container">
 
-<div class="log">
-このシステムは
-中等教育機関向け試験運用を経て
-高等教育向けに転用された
+    <div class="title">調査完了</div>
 
-試験運用校：
+    <p>
+ここまで辿り着いたあなたへ。
+    </p>
+
+    <p>
+これは告発文です。
+    </p>
+
+    <h2>過去について</h2>
+
+    <p>
+この方式は、
+一度だけ使われた
+新しい試みではありません。
+    </p>
+    <p>
+過去に、
+<strong>中等教育機関向けの小規模な実証実験</strong>
+として導入された履歴があります。
+    </p>
+    <p class="quote">
+「利用者行動の傾向分析」  
+「指導の効率化」  
+「問題の早期把握」
+    </p>
+
+    <h2>一度、問題になった</h2>
+
+    <p>
+評価と選別の境界、
+思想と行動の区別、
+記録が将来に与える影響。
+<br>
+議論はありました。
+表向きには
+<strong>運用終了</strong>
+という結論が出ました。
+    </p>
+
+    <h2>だから、終わらなかった</h2>
+    <p>
+<strong>高等教育機関向けに転用</strong>
+された。
+    </p>
+
+    <h2>試験運用校</h2>
+
+    <p class="hidden-name">
 ■■■中学校
-</div>
+    </p>
 
-<div class="section notice">
-  ※ 過去、係争あり  
-  ※ 結論：「思想の評価ではない」
-</div>
+    <div class="end">
+        ― 記録は残る。表には出なくとも。<br>
+        ただ、選別だけが残る。
+    </div>
 
-<p>
-名前を変え、  
-説明を変え、  
-仕組みは続いている。
-</p>
+</div>
 
 </body>
 </html>

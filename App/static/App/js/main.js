@@ -109,17 +109,16 @@ document.addEventListener("DOMContentLoaded", () => {
             if (order !== 2) return;
             chiyoda.style.display = "block";
             chatBox.prepend(chiyoda);
-        }, 84000);
+        });
     }
 
-    // --- msg-toride（内申イベント後 全ユーザー） ---
     const toride = document.getElementById("msg-toride");
     if (toride) {
         setTimeout(() => {
             if (!window._trigger_内申) return;
             toride.style.display = "block";
             chatBox.prepend(toride);
-        }, 88000);
+        });
     }
 });
 
