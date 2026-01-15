@@ -3,6 +3,8 @@ body {
     background: #f0f0f0;
     margin: 0;
     padding: 0;
+    height: 100vh;
+    overflow: hidden;
 }
 
 /* ===== ヘッダー ===== */
@@ -64,14 +66,14 @@ header {
 /* ===== メイン ===== */
 main {
     max-width: 1000px;
-    margin: 180px auto 20px;
+    margin: 160px auto 20px;
     padding: 0 15px;
 }
 
 #chat-box {
     display: flex;
     flex-direction: column;
-    max-height: calc(100vh - 180px);
+    height: calc(100vh - 250px);
     overflow-y: auto;
 }
 
