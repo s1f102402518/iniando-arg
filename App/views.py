@@ -7,6 +7,7 @@ from channels.layers import get_channel_layer
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.core.exceptions import ValidationError
+import time
 
 from .models import Room, Entry
 
@@ -181,15 +182,23 @@ def delete_room(request, room_id):
     room = get_object_or_404(Room, id=room_id)
     room_group_name = f'chat_{room.id}'
     
-    # 参加者に解散を通知
+    # 1. まず参加者に解散信号を送信
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
         room_group_name,
-        {'type': 'room_deleted', 'message': 'Room has been deleted.'}
+        {
+            'type': 'room_deleted', # JavaScript側で判定する値
+            'message': 'ROOM_DELETED_SIGNAL'
+        }
     )
 
-    room.delete()
+    # 2. ロビー（募集一覧）の更新通知
     broadcast_lobby_update()
+
+    # 3. 最後にデータベースから削除
+    room.delete()
+    
+    # 削除した本人はそのままロビーへ
     return redirect("lobby")
 
 # ==========================================

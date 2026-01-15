@@ -78,32 +78,45 @@
     const memberListElement = document.getElementById("member-list");
     const memberCountElement = document.getElementById("member-count");
     
+    // room_detail.html のスクリプト部分
+
     socket.onmessage = async function(e) {
         const data = JSON.parse(e.data);
+        console.log("WebSocket受信:", data);
 
-        if (data.type === "room_deleted") {
-            window.location.href = "{% url 'lobby' %}" + "?message=deleted";
+        // 【重要】解散信号を最優先で処理
+        if (data.type === "room_deleted" || data.message === "ROOM_DELETED_SIGNAL") {
+            console.log("解散されました。ロビーへ戻ります。");
+            // replace("/") を使うことで、404画面へ戻るのを防ぎます
+            window.location.replace("/"); 
+            return;
         }
         
-        if (data.type === "member_update") {
+        // メンバー更新の処理
+        if (data.type === "member_update" || data.type === "member_list_update") {
             await updateMemberList();
         }
     };
-    
+
+    // fetchが失敗しても404エラー画面にならないようにガードを入れる
     async function updateMemberList() {
-        const response = await fetch(`/room/${roomID}/members/`);
-        const data = await response.json();
-        
-        if (memberListElement) {
-            memberListElement.innerHTML = '';
-            
-            data.members.forEach(nickname => {
-                const li = document.createElement("li");
-                li.innerText = nickname;
-                memberListElement.appendChild(li);
-            });
-            
-            memberCountElement.innerText = data.count;
+        try {
+            const response = await fetch(`/room/${roomID}/members/`);
+            // すでに部屋がない(404)場合は、何もせずに終了して信号による遷移を待つ
+            if (!response.ok) return; 
+
+            const data = await response.json();
+            if (memberListElement) {
+                memberListElement.innerHTML = '';
+                data.members.forEach(nickname => {
+                    const li = document.createElement("li");
+                    li.innerText = nickname;
+                    memberListElement.appendChild(li);
+                });
+                memberCountElement.innerText = data.count;
+            }
+        } catch (err) {
+            console.log("部屋が削除されたため、メンバー情報の取得をスキップしました。");
         }
     }
 </script>
