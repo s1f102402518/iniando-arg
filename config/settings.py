@@ -14,24 +14,17 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
+SECRET_KEY = os.getenv(
+    "SECRET_KEY",
+    "local-dev-secret-key"
+)
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-a6hrf6a$o5e$g3(32$n5bkvgj9qw@@br_a-i%w^%k6sl5i7@ty'
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ['*', 'xxxx-xxxx.jp.ngrok-free.app']
-
-
-# Application definition
 
 INSTALLED_APPS = [
     'daphne',
@@ -88,8 +81,6 @@ DATABASES = {
     }
 }
 
-# Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -106,10 +97,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/6.0/topics/i18n/
-
 LANGUAGE_CODE = 'ja'
 
 TIME_ZONE = 'Asia/Tokyo'
@@ -117,10 +104,6 @@ TIME_ZONE = 'Asia/Tokyo'
 USE_I18N = True
 
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
@@ -149,19 +132,9 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost',
 ]
 
-
-# --- 共通設定（ngrok と 127.0.0.1 両対応） ---
-
-# 1. プロキシ経由の HTTPS 認識設定
-# これは 127.0.0.1 で動かしている時は無視されるだけなので、常時オンで OK です。
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# 2. クッキーのセキュア設定を False にする
-# これが最大のポイントです。False にしておけば：
-# - 127.0.0.1（HTTP）でもクッキーが送れる
-# - ngrok（HTTPS）でもクッキーは送れる（HTTPS通信内で送る分には問題ない）
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
 
-# 3. HTTPS 強制リダイレクトもオフ
 SECURE_SSL_REDIRECT = False
