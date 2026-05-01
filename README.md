@@ -1,4 +1,3 @@
-# cs4-2025-class3-team2-project
 # 大学掲示板型ARG（協力型謎解きWebアプリ）
 3人協力型のオンラインARG（Alternate Reality Game）です。  
 大学の「学内限定掲示板」という世界観の中で、プレイヤーは同時に同じ掲示板へ参加し、会話・投稿・情報共有を通じて隠された真相にたどり着きます。Discordなどでボイスチャットを併用することも、この掲示板上でリアルタイムに会話することもでき、非対面での3人同時プレイを想定しています。
@@ -88,7 +87,7 @@
 
 ### 1. リポジトリをクローン
 git clone https://github.com/s1f102402518/iniando-arg.git
-cd cs4-2025-class3-team2-project
+cd iniando-arg
 
 ### 2. 仮想環境を作成
 python -m venv venv
