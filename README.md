@@ -100,10 +100,10 @@ pip install -r requirements.txt
 ### 4. 環境変数を設定
 .env を作成し、以下を設定
 
-SECRET_KEY='your_secret_key'
-DB_NAME='your_db_name'
-DB_USER='your_db_user'
-DB_PASSWORD='your_db_password'
+SECRET_KEY=<your_secret_key>
+DB_NAME=<your_db_name>
+DB_USER=<your_db_user>
+DB_PASSWORD=<your_db_password>
 DB_HOST=localhost
 DB_PORT=5432
 
@@ -123,16 +123,12 @@ http://127.0.0.1:8000/
 daphne -b 0.0.0.0 -p $PORT config.asgi:application
 
 必要な環境変数：
-DJANGO_SETTINGS_MODULE=config.production
-SECRET_KEY
+SECRET_KEY=<your-django-secret-key>
 DEBUG=False
+DATABASE_URL=postgresql://<username>:<password>@<host>/<database>
+REDIS_URL=redis://<host>:6379
 ALLOWED_HOSTS=.onrender.com
-DB_NAME
-DB_USER
-DB_PASSWORD
-DB_HOST
-DB_PORT=5432
-REDIS_URL
+CSRF_TRUSTED_ORIGINS=https://<your-app>.onrender.com
 
 
 複数ユーザーでの挙動確認のため、
