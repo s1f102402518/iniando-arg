@@ -17,10 +17,7 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
-SECRET_KEY = os.getenv(
-    "SECRET_KEY",
-    "local-dev-secret-key"
-)
+SECRET_KEY = os.environ["SECRET_KEY"]
 
 DEBUG = True
 
@@ -127,10 +124,8 @@ CHANNEL_LAYERS = {
     },
 }
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://xxxx-xxxx.jp.ngrok-free.app',
-    'https://brooklynn-domical-eliza.ngrok-free.dev',
-]
+raw = os.getenv("CSRF_TRUSTED_ORIGINS", "")
+CSRF_TRUSTED_ORIGINS = [x for x in raw.split(",") if x]
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 

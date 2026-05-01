@@ -1,9 +1,7 @@
 from .settings import *
 import os
 
-SECRET_KEY = os.getenv("SECRET_KEY", SECRET_KEY)
-
-DEBUG = os.getenv("DEBUG", "False") == "True"
+DEBUG = os.getenv("DEBUG") == "True"
 
 ALLOWED_HOSTS = os.getenv(
     "ALLOWED_HOSTS",
