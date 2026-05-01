@@ -87,7 +87,7 @@
 ## 実行方法
 
 ### 1. リポジトリをクローン
-git clone （GitHub URL）
+git clone https://github.com/s1f102402518/iniando-arg.git
 cd cs4-2025-class3-team2-project
 
 ### 2. 仮想環境を作成
