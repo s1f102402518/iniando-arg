@@ -9,7 +9,7 @@ startCommand: python manage.py migrate && daphne -b 0.0.0.0 -p $PORT config.asgi
 
     envVars:
       - key: DJANGO_SETTINGS_MODULE
-        value: config.production
+        value: config.settings
 
       - key: SECRET_KEY
         generateValue: true
