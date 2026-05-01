@@ -1,6 +1,7 @@
 from .settings import *
 import os
 import dj_database_url
+import urllib.parse
 
 DEBUG = os.getenv("DEBUG") == "True"
 
@@ -29,14 +30,20 @@ CSRF_COOKIE_SECURE = True
 SECURE_SSL_REDIRECT = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [os.getenv("REDIS_URL")],
+REDIS_URL = os.getenv("REDIS_URL")
+
+if REDIS_URL:
+    url = urllib.parse.urlparse(REDIS_URL)
+
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [(url.hostname, url.port)],
+            },
         },
-    },
-}
+    }
+
 
 if os.getenv("DATABASE_URL"):
     DATABASES = {
