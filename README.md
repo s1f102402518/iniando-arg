@@ -1,7 +1,7 @@
 # cs4-2025-class3-team2-project
 # 大学掲示板型ARG（協力型謎解きWebアプリ）
 3人協力型のオンラインARG（Alternate Reality Game）です。  
-大学の「学内限定掲示板」という世界観の中で、プレイヤーは同時に同じ掲示板へ参加し、会話・投稿・情報共有を通じて隠された真相にたどり着きます。Discodeなどでのボイスチャットを併用するか、この掲示板上でもリアルタイムに会話することができ、非対面での3人同時プレイを想定しています。
+大学の「学内限定掲示板」という世界観の中で、プレイヤーは同時に同じ掲示板へ参加し、会話・投稿・情報共有を通じて隠された真相にたどり着きます。Discordなどでボイスチャットを併用することも、この掲示板上でリアルタイムに会話することもでき、非対面での3人同時プレイを想定しています。
 
 一見すると普通の雑談掲示板ですが、実際には
 
@@ -54,7 +54,7 @@
 
 - PostgreSQL
 
-### インフラ・デプロイ
+### インフラ/デプロイ
 
 - Render（Web Service / PostgreSQL / Redis）
 - WhiteNoise（静的ファイル配信）
@@ -64,6 +64,7 @@
 
 - localStorage（裏ページ解放状態の保存）
 - WebSocket によるリアルタイム掲示板更新
+- ASGIサーバーとしてDaphneを利用
 
 ---
 
@@ -86,7 +87,6 @@
 ## 実行方法
 
 ### 1. リポジトリをクローン
-
 git clone （GitHub URL）
 cd cs4-2025-class3-team2-project
 
@@ -107,30 +107,123 @@ DB_PASSWORD='your_db_password'
 DB_HOST=localhost
 DB_PORT=5432
 
-### 5. マイグレーション
-python manage.py makemigrations
+### 5. Redis 起動（別ターミナル）
+redis-server
+
+### 6. マイグレーション
 python manage.py migrate
 
-### 6. サーバー起動
+### 7. サーバー起動
 python manage.py runserver
 
-### 7. アクセス
+### 8. アクセス
 http://127.0.0.1:8000/
+
+### デプロイ（Render）
+daphne -b 0.0.0.0 -p $PORT config.asgi:application
+
+必要な環境変数：
+DJANGO_SETTINGS_MODULE=config.production
+SECRET_KEY
+DEBUG=False
+ALLOWED_HOSTS=.onrender.com
+DB_NAME
+DB_USER
+DB_PASSWORD
+DB_HOST
+DB_PORT=5432
+REDIS_URL
 
 
 複数ユーザーでの挙動確認のため、
-
-別ブラウザ
-シークレットモード
-別Googleアカウント
-
-などを利用して複数ログインを行うことで、
-同一パソコン上でもUSER_ORDERごとの表示差分を確認できます。
+別ブラウザ、シークレットモード、別Googleアカウントなどを利用して複数ログインを行うことで、同一パソコン上でもUSER_ORDERごとの表示差分を確認できます。
 
 ---
 
-### 工夫した点
-1. 同じ画面なのに「見えている情報が違う」体験
+## システム構成図
+┌──────────────────────────────┐
+│          Browser             │
+│ HTML / CSS / JavaScript      │
+│ WebSocket / localStorage     │
+└─────────────┬────────────────┘
+              │
+              │ HTTP / WebSocket
+              ▼
+┌────────────────────────────────────┐
+│ Django + Channels + Daphne         │
+│                                    │
+│ App                                │
+│ ├ views.py                         │
+│ ├ consumers.py                     │
+│ ├ routing.py                       │
+│ └ puzzle progression               │
+│                                    │
+│ accounts / authtest                │
+│ └ login / signup / authentication  │
+│                                    │
+│ config                             │
+│ ├ settings.py                      │
+│ └ production.py                    │
+└───────┬──────────────┬─────────────┘
+        │              │
+        │              │
+        ▼              ▼
+┌──────────────┐   ┌──────────────┐
+│ PostgreSQL   │   │ Redis        │
+│ (Production) │   │ ChannelLayer │
+│              │   │ WebSocket    │
+│ Room         │   │ Pub/Sub      │
+│ Entry        │   │              │
+│ Message      │   │              │
+└──────────────┘   └──────────────┘
+
+        ▼
+┌──────────────┐
+│ SQLite       │
+│ (Local Dev)  │
+└──────────────┘
+
+        ▼
+┌──────────────────────────────┐
+│ Render                       │
+│ Web Service                  │
+│ PostgreSQL                   │
+│ Redis                        │
+│ WhiteNoise                   │
+│ render.yaml / Procfile       │
+└──────────────────────────────┘
+---
+
+## ER図
+
+┌────────────┐
+│   Room     │
+├────────────┤
+│ id         │
+│ name       │
+│ created_at │
+└─────┬──────┘
+      │ 1
+      │
+      ├──────────────┐
+      │              │
+      │ N            │ N
+      ▼              ▼
+
+┌────────────┐   ┌────────────┐
+│   Entry    │   │  Message   │
+├────────────┤   ├────────────┤
+│ id         │   │ id         │
+│ nickname   │   │ username   │
+│ room_id FK │   │ content    │
+└────────────┘   │ timestamp  │
+                 │ room_id FK │
+                 └────────────┘
+
+---
+
+## 工夫した点
+1. 同じ画面なのに見えている情報が違うという体験
 
 全員が同じURL・同じ掲示板を見ているように見せつつ、
 window.USER_ORDER
@@ -179,3 +272,89 @@ URL出現条件
 
 ### 最終ページ
 ![最終ページ](image/enshu_last.png)
+
+## 技術選定理由
+### Django を採用した理由
+- 認証機能（ログイン / サインアップ）が標準で利用できる
+- 管理画面が標準搭載されている
+- チーム開発で構造が分かりやすい
+- PostgreSQL との接続が容易
+
+短期間で安定したWebアプリを構築しやすいため採用しました。
+
+### Django Channels を採用した理由
+
+この作品では
+- リアルタイム掲示板
+- 投稿の即時反映
+- NPCメッセージの進行
+- 特定ワードによるイベント出現
+
+が重要だったため、通常の request/response ではなく
+WebSocket が必要でした。
+
+Django の既存構成を維持したまま導入できるためChannels を採用しました。
+
+### Redis を採用した理由
+
+Channels の Channel Layer として必要なため採用しました。
+
+### Render を採用した理由
+
+PostgreSQL, Redis, Django本体を無料でまとめて管理できるため採用しました。
+
+
+## 自分の担当範囲
+
+### 企画・設計
+
+- ARG全体のストーリー設計
+- 謎解き導線の設計
+- 3人協力型の情報分散構造の設計
+- A / B / C それぞれに異なる情報を見せる仕組みの設計
+- 最終的に「麹町中学校内申書事件」へ接続する構成の設計
+
+### バックエンド（主担当）
+
+- Django Channels + WebSocket の導入
+- views.py の一部機能実装
+- 掲示板のリアルタイム更新機能
+- USER_ORDER の割り当て処理
+- プレイヤーごとの表示分岐ロジック
+- 特定ワード検出処理
+- 隠しメッセージ出現処理
+- NPC投稿の段階表示
+- 裏ページ（a.html / b.html / c.html）の解放条件実装
+- 最終ページへの導線設計
+- localStorageを用いた進行状態保存
+- URL出現条件の制御
+
+---
+
+### フロントエンド
+
+- HTML実装（複数ページ）
+- JavaScript による進行制御
+- 投稿機能の改良
+- 特定ワード検出時のアラート機能の改良
+- 一部CSS実装・調整
+
+---
+
+### インフラ・デプロイ
+- PostgreSQL接続設定
+- Render本番環境構築
+- Redis接続設定
+- production.py作成
+- render.yaml作成
+- Procfile作成
+* WhiteNoise導入
+* .env管理
+* requirements.txt整理
+* デプロイ対応
+
+### 保守・改善
+
+- リファクタリング
+- README 作成
+- 公開用リポジトリ整備

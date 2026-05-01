@@ -1,3 +1,4 @@
+// ページ読み込み完了後に初期処理を実行
 document.addEventListener('DOMContentLoaded', () => {
     updateRoomList();
     updateMyRoomList();
@@ -5,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupWebSocket();
 });
 
+// ロビー全体の更新通知を受け取る
 function setupWebSocket() {
     const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
     const lobbySocket = new WebSocket(
@@ -69,6 +71,7 @@ async function updateRoomList() {
     }
 }
 
+// 自分が参加している部屋一覧を取得して更新
 async function updateMyRoomList() {
     const listElement = document.getElementById('my-rooms-list');
     if (!listElement) return;
@@ -89,6 +92,7 @@ async function updateMyRoomList() {
     }
 }
 
+// ユーザー名クリック時のログアウトメニュー制御
 function setupUserMenu() {
     const userNameBtn = document.getElementById('user-name');
     const dropdown = document.getElementById('logout-dropdown');
@@ -103,7 +107,7 @@ function setupUserMenu() {
             dropdown.style.display = 'none';
         });
     }
-    
+    // ?message=xxx のような一時パラメータをURLから削除
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('message')) {
          window.history.replaceState({}, document.title, window.location.pathname);

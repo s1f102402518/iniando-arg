@@ -1,9 +1,13 @@
 console.log("main.js loaded");
 
 const roomID = window.ROOM_ID;
+// 特定ワード検出用（隠し要素のトリガー）
 const ALERT_WORD = "麹町中学校内申書事件";
+// 最終ページURL
 const ANSWER_URL = `${location.protocol}//${location.host}/answer/secret/`;
 
+// WebSocket接続
+// チャット送信・受信、部屋削除通知を処理
 let socket = null;
 if (window.ROOM_ID) {
     socket = new WebSocket(
@@ -20,6 +24,8 @@ const input = document.getElementById("message-input");
 const sendBtn = document.getElementById("send-btn");
 const currentUsername = document.getElementById("current-username").value;
 
+// 「内申」入力時に段階的に表示する特殊メッセージ
+// order は A/B/C の役割（0,1,2）に対応
 const naishinMessageIds = [
     { id: "msg-naishin", order: 1 },
     { id: "msg-naishin2", order: 0 },
@@ -30,6 +36,7 @@ const naishinMessageIds = [
     { id: "msg-naishin7", order: 2 },
 ];
 
+// 特定ワード入力時に、ユーザーごとに異なる隠しメッセージを順番に表示
 function revealMessagesSequentially(type) {
     const order = Number(window.USER_ORDER);
 
@@ -64,6 +71,8 @@ function revealMessagesSequentially(type) {
     }
 }
 
+// 初期メッセージを時間差で表示
+// 特定ユーザーだけに見えるspecial messageもここで制御
 document.addEventListener("DOMContentLoaded", () => {
     const order = Number(window.USER_ORDER);
     
@@ -98,6 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+// WebSocket受信処理
 if (socket) {
     socket.onmessage = (e) => {
         const data = JSON.parse(e.data);
@@ -110,9 +120,11 @@ if (socket) {
         if (!data.message) return;
         displayMessage(data);
 
+        // 表記ゆれがあったため正規化
         const rawMsg = data.message.trim().normalize("NFKC").replace(/\s+/g, "");
         const order = Number(window.USER_ORDER);
 
+        // 隠しメッセージ表示用
         if (rawMsg === "内申") {
             if (!window._trigger_内申) {
                 window._trigger_内申 = true;
@@ -125,7 +137,7 @@ if (socket) {
                 revealMessagesSequentially("千代田");
             }
         }
-
+        // オーダーごとに隠しページ遷移
         if (rawMsg === "仕様書" && order === 0) {
             localStorage.setItem("a_unlocked", "true");
             window.open(`/a/${roomID}/`, "_blank");
@@ -139,10 +151,12 @@ if (socket) {
             window.open(`/c/${roomID}/`, "_blank");
         }
 
+        // 最終ワード検出時にURLコピーUI表示
         if (rawMsg.includes(ALERT_WORD)) showCopyAlertWithButton(ANSWER_URL, ANSWER_URL);
     };
 }
 
+// チャット表示用HTML生成
 function displayMessage(data) {
     const div = document.createElement("div");
     div.className = "message";
@@ -165,6 +179,7 @@ function displayMessage(data) {
     chatBox.prepend(div);
 }
 
+// メッセージ送信
 function sendMessage() {
     const text = input.value.trim();
     if (!text || !socket) return;
@@ -176,6 +191,7 @@ input.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
 });
 
+// 特定ワード検出時にURLコピー用のポップアップ表示
 function showCopyAlertWithButton(displayText, copyText) {
     const box = document.createElement("div");
     box.style = "position:fixed; top:90px; left:50%; transform:translateX(-50%); background:#fffdf5; border:2px solid #d4c38a; padding:12px; z-index:9999;";

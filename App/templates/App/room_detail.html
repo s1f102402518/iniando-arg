@@ -70,6 +70,8 @@
     }
 
     const roomID = "{{ room.id }}";
+    // ルームごとのWebSocket接続
+    // メンバー変更, 部屋削除をリアルタイムで反映
     const socket = new WebSocket(
         'ws://' + window.location.host +
         '/ws/chat/' + roomID + '/'
@@ -87,12 +89,12 @@
             window.location.replace("/"); 
             return;
         }
-        
+        // 入退室時にメンバー一覧を再取得して更新
         if (data.type === "member_update" || data.type === "member_list_update") {
             await updateMemberList();
         }
     };
-
+    // 最新の参加者一覧をAPIから取得して再アップ
     async function updateMemberList() {
         try {
             const response = await fetch(`/room/${roomID}/members/`);

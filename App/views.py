@@ -7,12 +7,11 @@ from channels.layers import get_channel_layer
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.core.exceptions import ValidationError
-import time
-
 from .models import Room, Entry
+import random
 
 def broadcast_lobby_update():
-    """ロビー（募集一覧）に更新を通知する"""
+    # ロビー（募集一覧）に更新を通知する
     channel_layer = get_channel_layer()
     lobby_group_name = 'lobby_updates'
     async_to_sync(channel_layer.group_send)(
@@ -23,10 +22,8 @@ def broadcast_lobby_update():
         }
     )
 
-
-
 def lobby(request):
-    """ロビー画面の表示（検索機能付き）"""
+    # 募集中（3人未満）のルーム一覧と自分の参加ルームを表示
     query = request.GET.get("q", "")
     
     all_rooms = Room.objects.annotate(num_players=Count("entries"))
@@ -51,7 +48,7 @@ def lobby(request):
     })
 
 def room_detail(request, room_id):
-    """調査グループ待機所（入室処理含む）"""
+    # 調査グループ待機所（入室処理含み、最大3人)
     if not request.user.is_authenticated:
         return redirect("login")
 
@@ -64,7 +61,7 @@ def room_detail(request, room_id):
     if not user_is_member and members.count() >= 3:
         return redirect("lobby") 
 
-    entry, created = Entry.objects.get_or_create(
+    _, created = Entry.objects.get_or_create(
         room=room, 
         nickname=current_username
     )
@@ -87,9 +84,8 @@ def room_detail(request, room_id):
         "members": room.entries.all()
     })
 
-import hashlib
-
 def thread(request, room_id):
+    # チャット画面表示 + ユーザー順序（0,1,2）を割り当て
     if not request.user.is_authenticated:
         return redirect("login")
 
@@ -97,11 +93,11 @@ def thread(request, room_id):
 
     user_entry = room.entries.filter(nickname=request.user.username).first()
 
-    if not room.entries.filter(nickname=request.user.username).exists():
+    if not user_entry:
         return redirect("room_detail", room_id=room.id)
 
     all_entries = list(room.entries.all().order_by('id')) 
-    order = all_entries.index(user_entry) % 3  # 0,1,2
+    order = all_entries.index(user_entry)  # 0,1,2
 
     return render(request, "App/thread.html", {
         "room": room,
@@ -110,7 +106,7 @@ def thread(request, room_id):
 
 
 def create_room(request):
-    """新しい調査グループを作成"""
+    # 新規ルーム作成＋作成者を自動参加
     if not request.user.is_authenticated:
         return redirect("login")
 
@@ -127,7 +123,7 @@ def create_room(request):
     return redirect("lobby")
 
 def leave_room(request, room_id):
-    """グループから退出"""
+    # グループから退出
     if not request.user.is_authenticated:
         return redirect("login")
 
@@ -154,7 +150,7 @@ def leave_room(request, room_id):
     return redirect("lobby")
 
 def delete_room(request, room_id):
-    """グループを解散（削除）"""
+    # ルーム削除＋全参加者へ削除通知
     room = get_object_or_404(Room, id=room_id)
     room_group_name = f'chat_{room.id}'
     
@@ -172,7 +168,7 @@ def delete_room(request, room_id):
     return redirect("lobby")
 
 def get_recruiting_rooms(request):
-    """募集中の部屋リストをJSONで返す（リアルタイム更新用）"""
+    # 募集中の部屋リストをJSONで返す(リアルタイム更新用)
     query = request.GET.get('q', '')
     rooms = Room.objects.annotate(num_players=Count("entries")).filter(num_players__lt=3)
 
@@ -189,6 +185,7 @@ def get_recruiting_rooms(request):
     return JsonResponse({'rooms': room_data})
 
 def get_my_rooms(request):
+    # 自分が参加中のルーム一覧を返す
     if not request.user.is_authenticated:
         return JsonResponse({'error': 'Not authenticated'}, status=401)
 
@@ -199,6 +196,7 @@ def get_my_rooms(request):
     return JsonResponse({'html': html})
 
 def get_room_members(request, room_id):
+    # ルームのメンバー一覧を返す
     room = get_object_or_404(Room, id=room_id)
     members = room.entries.all()
     member_list = [member.nickname for member in members]
@@ -207,10 +205,9 @@ def get_room_members(request, room_id):
         'members': member_list,
         'count': len(member_list)
     })
-import random
 
 def generate_scores(user_order=None, judgment=None):
-
+    # 評価スコア生成(プレイヤーは固定、NPCはランダム)
     if user_order is not None:
         if user_order == 0:
             judgment_value= "A"
@@ -245,6 +242,7 @@ def generate_scores(user_order=None, judgment=None):
 
 
 def a_page(request, room_id):
+    # 各ユーザーの評価情報（プレイヤー分＋ダミー）を生成して表示
     room = get_object_or_404(Room, id=room_id)
     user_entry = room.entries.filter(nickname=request.user.username).first()
     if not user_entry:

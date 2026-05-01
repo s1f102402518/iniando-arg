@@ -5,6 +5,7 @@ from django.utils import timezone
 from .models import Room, Message
 
 class ChatConsumer(AsyncWebsocketConsumer):
+    # 指定ルームのグループに参加し、過去ログを送信
     async def connect(self):
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
         self.room_group_name = f"chat_{self.room_name}"
@@ -31,6 +32,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
 
+    # メッセージ受信 → DB保存 → グループ全体へブロードキャスト
     async def receive(self, text_data):
         data = json.loads(text_data)
         message = data["message"]
@@ -50,6 +52,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             }
         )
 
+    # グループから受信したメッセージをクライアントへ送信
     async def chat_message(self, event):
         await self.send(text_data=json.dumps({
             'type': event['type'],
@@ -58,23 +61,27 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'timestamp': event['timestamp']
         }))
 
+    # DBにチャットメッセージを保存（同期処理を非同期化）
     @sync_to_async
     def save_message(self, username, content):
         room = Room.objects.get(id=self.room_name)
         Message.objects.create(room=room, username=username, content=content, timestamp=timezone.now())
     
+    # ルームの過去メッセージを時系列で取得
     @sync_to_async
     def get_previous_messages(self):
         room = Room.objects.get(id=self.room_name)
         messages_qs = Message.objects.filter(room=room).order_by('timestamp')
         return list(messages_qs.values('username', 'content', 'timestamp'))
 
+    # メンバー変更イベントをクライアントへ通知
     async def member_list_update(self, event):
         await self.send(text_data=json.dumps({
             "type": "member_update",
             "message": event["message"]
         }))
 
+    # ルーム削除イベントを通知（強制退出用）
     async def room_deleted(self, event):
         await self.send(text_data=json.dumps({
             "type": "room_deleted",
