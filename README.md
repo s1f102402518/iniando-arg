@@ -136,84 +136,64 @@ CSRF_TRUSTED_ORIGINS=https://<your-app>.onrender.com
 ---
 
 ## システム構成図
-┌──────────────────────────────┐
-│          Browser             │
-│ HTML / CSS / JavaScript      │
-│ WebSocket / localStorage     │
-└─────────────┬────────────────┘
-              │
-              │ HTTP / WebSocket
-              ▼
-┌────────────────────────────────────┐
-│ Django + Channels + Daphne         │
-│                                    │
-│ App                                │
-│ ├ views.py                         │
-│ ├ consumers.py                     │
-│ ├ routing.py                       │
-│ └ puzzle progression               │
-│                                    │
-│ accounts / authtest                │
-│ └ login / signup / authentication  │
-│                                    │
-│ config                             │
-│ ├ settings.py                      │
-│ └ production.py                    │
-└───────┬──────────────┬─────────────┘
-        │              │
-        │              │
-        ▼              ▼
-┌──────────────┐   ┌──────────────┐
-│ PostgreSQL   │   │ Redis        │
-│ (Production) │   │ ChannelLayer │
-│              │   │ WebSocket    │
-│ Room         │   │ Pub/Sub      │
-│ Entry        │   │              │
-│ Message      │   │              │
-└──────────────┘   └──────────────┘
+graph TD
 
-        ▼
-┌──────────────┐
-│ SQLite       │
-│ (Local Dev)  │
-└──────────────┘
+A[Browser<br/>HTML / CSS / JS<br/>WebSocket / localStorage]
 
-        ▼
-┌──────────────────────────────┐
-│ Render                       │
-│ Web Service                  │
-│ PostgreSQL                   │
-│ Redis                        │
-│ WhiteNoise                   │
-│ render.yaml / Procfile       │
-└──────────────────────────────┘
+B[Django + Channels + Daphne]
+
+C[PostgreSQL]
+D[Redis]
+
+E[SQLite (Local Dev)]
+F[Render]
+
+A -->|HTTP / WebSocket| B
+
+B --> C
+B --> D
+
+B --> E
+
+B --> F
+
+subgraph Django App
+B1[App<br/>views / consumers / routing / logic]
+B2[accounts / auth]
+B3[config (settings / production)]
+end
+
+B --> B1
+B --> B2
+B --> B3
 ---
 
 ## ER図
 
-┌────────────┐
-│   Room     │
-├────────────┤
-│ id         │
-│ name       │
-│ created_at │
-└─────┬──────┘
-      │ 1
-      │
-      ├──────────────┐
-      │              │
-      │ N            │ N
-      ▼              ▼
+erDiagram
 
-┌────────────┐   ┌────────────┐
-│   Entry    │   │  Message   │
-├────────────┤   ├────────────┤
-│ id         │   │ id         │
-│ nickname   │   │ username   │
-│ room_id FK │   │ content    │
-└────────────┘   │ timestamp  │
-                 │ room_id FK │
-                 └────────────┘
+ROOM ||--o{ ENTRY : has
+ROOM ||--o{ MESSAGE : has
+
+ROOM {
+    string id
+    string name
+    datetime created_at
+}
+
+ENTRY {
+    string id
+    string nickname
+    string room_id
+}
+
+MESSAGE {
+    string id
+    string username
+    string content
+    datetime timestamp
+    string room_id
+}
 
 ---
 
