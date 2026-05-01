@@ -1,16 +1,14 @@
 @charset "utf-8";
 
-/* --- 共通設定 --- */
 :root {
-  --univ-blue: #003366;       /* 鴉ヶ丘大学カラー */
-  --univ-bg: #f0f2f5;         /* 背景グレー */
+  --univ-blue: #003366;
+  --univ-bg: #f0f2f5;
   --text-main: #333333;
   --text-sub: #666666;
   --border-color: #cccccc;
   --font-base: "Yu Gothic", "Meiryo", sans-serif;
 }
 
-/* --- 全体レイアウト --- */
 body {
   margin: 0;
   padding: 40px 20px;
@@ -24,14 +22,12 @@ body {
   min-height: 100vh;
 }
 
-/* コンテナ */
 body > * {
   width: 100%;
   max-width: 600px;
   box-sizing: border-box;
 }
 
-/* --- タイトル --- */
 h1 {
   font-size: 1.3rem;
   color: var(--univ-blue);
@@ -42,7 +38,6 @@ h1 {
   padding-bottom: 10px;
 }
 
-/* --- セクション --- */
 .section {
   background-color: #ffffff;
   padding: 20px;
@@ -54,7 +49,6 @@ h1 {
   line-height: 1.6;
 }
 
-/* --- 注意書き --- */
 .section.notice {
   background-color: #fff8e8;
   border-left-color: #ff9900;
@@ -64,7 +58,6 @@ h1 {
   margin-bottom: 30px;
 }
 
-/* --- ログ表示 --- */
 .log {
   background-color: #f8f9fa;
   padding: 15px;
@@ -72,10 +65,9 @@ h1 {
   font-family: "Courier New", Consolas, monospace;
   color: var(--univ-blue);
   margin-top: 10px;
-  white-space: pre-wrap; /* 改行やスペースを維持 */
+  white-space: pre-wrap;
 }
 
-/* --- テキスト調整 --- */
 p {
   margin: 0 0 10px 0;
 }

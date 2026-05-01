@@ -1,18 +1,16 @@
 @charset "utf-8";
 
-/* --- 変数設定：大学らしい「お堅い」色味 --- */
 :root {
-  --univ-blue: #003366;      /* 伝統的な大学カラー（濃紺） */
-  --univ-accent: #b30000;    /* 警告や重要通知用の赤 */
-  --bg-gray: #f0f2f5;        /* 無機質な背景グレー */
-  --text-main: #333333;      /* 真っ黒ではない読みやすい黒 */
-  --text-sub: #666666;       /* 補足情報のグレー */
-  --border-color: #cccccc;   /* 標準的な枠線 */
-  --font-base: "Yu Gothic", "Meiryo", sans-serif; /* Windows標準のゴシック体 */
-  --font-mono: "Courier New", Consolas, monospace; /* システム情報用 */
+  --univ-blue: #003366;
+  --univ-accent: #b30000;
+  --bg-gray: #f0f2f5;
+  --text-main: #333333;
+  --text-sub: #666666;
+  --border-color: #cccccc;
+  --font-base: "Yu Gothic", "Meiryo", sans-serif;
+  --font-mono: "Courier New", Consolas, monospace;
 }
 
-/* --- 基本リセットと全体設定 --- */
 * {
   box-sizing: border-box;
 }
@@ -29,18 +27,15 @@ body {
   min-height: 100vh;
 }
 
-/* --- メインコンテナ（ログインボックス） --- */
 .container {
   width: 100%;
   max-width: 450px;
   background-color: #ffffff;
   border: 1px solid var(--border-color);
-  /* 影を少しつけて浮き上がらせるが、派手にはしない */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  padding: 0; /* 内部の余白は子要素で調整 */
+  padding: 0;
 }
 
-/* --- ヘッダー（システム情報表示エリア） --- */
 header {
   background-color: #e9ecef;
   border-bottom: 1px solid var(--border-color);
@@ -52,14 +47,13 @@ header {
 
 .system-info {
   font-family: var(--font-mono);
-  font-size: 0.75rem; /* 小さくしてログっぽく */
+  font-size: 0.75rem;
   color: var(--text-sub);
   margin: 0;
   letter-spacing: -0.5px;
   white-space: nowrap;
 }
 
-/* --- メインコンテンツエリア --- */
 main {
   padding: 30px 40px;
 }
@@ -74,7 +68,6 @@ h1 {
   text-align: center;
 }
 
-/* --- エラーメッセージ --- */
 .error-message {
   background-color: #fdecea;
   border: 1px solid #f5c6cb;
@@ -90,12 +83,10 @@ h1 {
   font-weight: bold;
 }
 
-/* --- フォームスタイル --- */
 .login-form p {
   margin-bottom: 15px;
 }
 
-/* Djangoのform.as_pが出力するlabel */
 .login-form label {
   display: block;
   font-size: 0.9rem;
@@ -104,14 +95,13 @@ h1 {
   color: var(--text-main);
 }
 
-/* Djangoのform.as_pが出力するinput */
 .login-form input[type="text"],
 .login-form input[type="password"] {
   width: 100%;
   padding: 10px;
   font-size: 1rem;
   border: 1px solid var(--border-color);
-  border-radius: 2px; /* 丸みを少なくして事務的に */
+  border-radius: 2px;
   transition: border-color 0.2s;
 }
 
@@ -122,7 +112,6 @@ h1 {
   background-color: #fafdff;
 }
 
-/* --- 送信ボタン --- */
 .auth-button {
   width: 100%;
   padding: 12px;
@@ -141,7 +130,6 @@ h1 {
   opacity: 0.9;
 }
 
-/* --- フッターリンク --- */
 .footer-links {
   margin-top: 25px;
   text-align: center;
@@ -159,11 +147,10 @@ h1 {
   color: var(--univ-blue);
 }
 
-/* --- レスポンシブ対応 --- */
 @media (max-width: 480px) {
   .container {
     max-width: 90%;
-    box-shadow: none; /* スマホではフラットに */
+    box-shadow: none;
   }
   main {
     padding: 20px;

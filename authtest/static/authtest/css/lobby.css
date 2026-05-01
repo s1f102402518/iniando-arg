@@ -1,33 +1,29 @@
 @charset "utf-8";
 
-/* --- 共通設定 --- */
 :root {
-  --univ-blue: #003366;      /* 鴉ヶ丘大学カラー */
-  --univ-bg: #f0f2f5;        /* 背景グレー */
+  --univ-blue: #003366;
+  --univ-bg: #f0f2f5;
   --text-main: #333333;
   --text-sub: #666666;
   --border-color: #cccccc;
-  --accent-red: #b30000;     /* 満員表示などの警告色 */
-  --accent-green: #28a745;   /* 募集中などの肯定色 */
+  --accent-red: #b30000;
+  --accent-green: #28a745;
   --font-base: "Yu Gothic", "Meiryo", sans-serif;
 }
 
-/* --- 全体レイアウト --- */
 body {
   margin: 0;
   padding: 0;
   font-family: var(--font-base);
   background-color: var(--univ-bg);
   color: var(--text-main);
-  padding-bottom: 60px; /* フッター余裕 */
+  padding-bottom: 60px;
 }
 
-/* --- コンテンツ幅の制御 --- */
-/* ヘッダー以外の要素（h2, h3, form, ulなど）を中央揃えのコンテナに収める */
 body > h2,
 body > h3,
 body > h4,
-body > ul:not(.user-menu ul), /* ヘッダー内のulは除外 */
+body > ul:not(.user-menu ul),
 body > p,
 body > form,
 body > hr {
@@ -39,11 +35,9 @@ body > hr {
   box-sizing: border-box;
 }
 
-/* --- ヘッダー --- */
 header {
   background-color: #ffffff;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  /* HTML側のインラインスタイルと合わせて機能します */
 }
 
 header h1 {
@@ -51,7 +45,6 @@ header h1 {
   color: var(--univ-blue);
 }
 
-/* --- 依頼書エリア（h3, h4, 情報リスト） --- */
 h3 {
   margin-top: 30px;
   padding-bottom: 10px;
@@ -65,22 +58,20 @@ h4 {
   margin-bottom: 10px;
   font-size: 1rem;
   color: var(--univ-blue);
-  background-color: #e9ecef; /* 見出しに薄い背景をつけて書類っぽく */
+  background-color: #e9ecef;
   padding: 5px 10px;
   border-left: 4px solid var(--univ-blue);
 }
 
-/* 依頼情報のリスト（ul） */
-ul:not([id]) { /* IDを持たないul（＝上の情報の部分） */
+ul:not([id]) {
   list-style-type: square;
   color: var(--text-main);
   margin-bottom: 20px;
   background-color: #fff;
-  padding: 15px 15px 15px 35px; /* 左パディング確保 */
+  padding: 15px 15px 15px 35px;
   border: 1px solid var(--border-color);
 }
 
-/* 背景説明などのpタグ */
 body > p {
   background-color: #fff;
   padding: 15px;
@@ -90,7 +81,6 @@ body > p {
   font-size: 0.95rem;
 }
 
-/* --- フォーム（検索・作成） --- */
 form {
   margin-bottom: 15px;
   display: flex;
@@ -126,23 +116,20 @@ button:hover {
   opacity: 0.9;
 }
 
-/* 区切り線 */
 hr {
   border: none;
   border-top: 1px dashed var(--border-color);
   margin: 40px auto;
 }
 
-/* --- 部屋リスト（参加中・募集中） --- */
 h2 {
   font-size: 1.2rem;
   color: var(--text-main);
   margin-bottom: 15px;
-  border-left: 6px solid var(--text-sub); /* 青ではなくグレーで区別 */
+  border-left: 6px solid var(--text-sub);
   padding-left: 10px;
 }
 
-/* リストコンテナ (ul#...) */
 #my-rooms-list,
 #recruiting-rooms-list {
   list-style: none;
@@ -151,7 +138,6 @@ h2 {
   border: 1px solid var(--border-color);
 }
 
-/* リストアイテム (li) */
 #my-rooms-list li,
 #recruiting-rooms-list li {
   padding: 15px;
@@ -172,7 +158,6 @@ h2 {
   background-color: #f8f9fa;
 }
 
-/* リンクボタン（参加・グループへ） */
 #my-rooms-list a,
 #recruiting-rooms-list a {
   display: inline-block;
@@ -192,7 +177,6 @@ h2 {
   color: #fff;
 }
 
-/* 満員・募集中の文字色調整 */
 span[style*="color: red;"] {
   color: var(--accent-red) !important;
   font-weight: bold;

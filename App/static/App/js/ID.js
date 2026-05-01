@@ -1,12 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // ページ読み込み時に初回実行
     updateRoomList();
     updateMyRoomList();
     setupUserMenu();
     setupWebSocket();
 });
 
-// --- 1. WebSocket設定 ---
 function setupWebSocket() {
     const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
     const lobbySocket = new WebSocket(
@@ -26,23 +24,17 @@ function setupWebSocket() {
     };
 }
 
-// --- 2. 募集中リストの更新（検索対応） ---
 async function updateRoomList() {
     const listElement = document.getElementById('recruiting-rooms-list');
     if (!listElement) return;
 
-    // HTMLの data-url 属性からAPIのURLを取得
     const baseUrl = listElement.dataset.url; 
     
-    // URLの検索パラメータ(?q=...)を取得
     const urlParams = new URLSearchParams(window.location.search);
     const query = urlParams.get('q');
 
-    // API用URLを構築
     let apiUrl = baseUrl;
     if (query) {
-        // すでにURLパラメータがあるかチェックして結合文字を変える等の配慮はfetch側が単純ならこれでOK
-        // もしbaseUrlに既に?が含まれる設計なら &q= にする必要がありますが、通常は以下でOK
         apiUrl += `?q=${encodeURIComponent(query)}`;
     }
 
@@ -64,7 +56,7 @@ async function updateRoomList() {
                 li.appendChild(textNode);
                 
                 const link = document.createElement('a');
-                link.href = `/room/${room.id}/`; // ※ここも動的にしたい場合はHTMLからprefixを渡す工夫が必要ですが、一旦固定で記述
+                link.href = `/room/${room.id}/`;
                 link.innerText = '参加';
                 link.style.marginLeft = '13.5px';
 
@@ -77,12 +69,11 @@ async function updateRoomList() {
     }
 }
 
-// --- 3. 参加中リストの更新 ---
 async function updateMyRoomList() {
     const listElement = document.getElementById('my-rooms-list');
     if (!listElement) return;
 
-    const apiUrl = listElement.dataset.url; // HTMLからURLを取得
+    const apiUrl = listElement.dataset.url;
 
     try {
         const response = await fetch(apiUrl);
@@ -98,7 +89,6 @@ async function updateMyRoomList() {
     }
 }
 
-// --- 4. ユーザーメニュー（ログアウト）の動作 ---
 function setupUserMenu() {
     const userNameBtn = document.getElementById('user-name');
     const dropdown = document.getElementById('logout-dropdown');
@@ -114,7 +104,6 @@ function setupUserMenu() {
         });
     }
     
-    // メッセージ表示のリセット（URLパラメータの掃除）
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('message')) {
          window.history.replaceState({}, document.title, window.location.pathname);

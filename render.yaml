@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: iniando-arg
+    env: python
+
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate
+
+    startCommand: daphne -b 0.0.0.0 -p $PORT config.asgi:application
+
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.production
+
+      - key: SECRET_KEY
+        generateValue: true
+
+      - key: DEBUG
+        value: False
+
+      - key: ALLOWED_HOSTS
+        value: .onrender.com
+
+      - key: DB_NAME
+        sync: false
+
+      - key: DB_USER
+        sync: false
+
+      - key: DB_PASSWORD
+        sync: false
+
+      - key: DB_HOST
+        sync: false
+
+      - key: DB_PORT
+        value: 5432
+
+      - key: REDIS_URL
+        sync: false

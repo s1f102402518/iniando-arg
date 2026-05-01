@@ -24,7 +24,11 @@ SECRET_KEY = os.getenv(
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['*', 'xxxx-xxxx.jp.ngrok-free.app']
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    '.ngrok-free.app',
+]
 
 INSTALLED_APPS = [
     'daphne',
@@ -106,9 +110,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'App' / 'static',
-]
+STATICFILES_DIRS = []
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = '/'
@@ -127,9 +129,7 @@ CHANNEL_LAYERS = {
 
 CSRF_TRUSTED_ORIGINS = [
     'https://xxxx-xxxx.jp.ngrok-free.app',
-    'https://brooklynn-domical-eliza.ngrok-free.dev', # ngrok用
-    'http://127.0.0.1',
-    'http://localhost',
+    'https://brooklynn-domical-eliza.ngrok-free.dev',
 ]
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

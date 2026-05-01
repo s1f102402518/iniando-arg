@@ -20,20 +20,16 @@ const input = document.getElementById("message-input");
 const sendBtn = document.getElementById("send-btn");
 const currentUsername = document.getElementById("current-username").value;
 
-// --- 内申イベント用メッセージ定義 (キーワード「内申」で発動) ---
 const naishinMessageIds = [
     { id: "msg-naishin", order: 1 },
     { id: "msg-naishin2", order: 0 },
     { id: "msg-naishin3", order: 1 },
-    { id: "msg-naishin4", order: 2 }, // ユーザー3: 「誰も続いてくれない…」
-    { id: "msg-naishin5", order: 2 }, // ユーザー3: 「もういいよ」
+    { id: "msg-naishin4", order: 2 },
+    { id: "msg-naishin5", order: 2 },
     { id: "msg-naishin6", order: 1 },
-    { id: "msg-naishin7", order: 2 }, // ユーザー3: 「何が分かった？」
+    { id: "msg-naishin7", order: 2 },
 ];
 
-/**
- * 順番にメッセージを表示する (イベント制御)
- */
 function revealMessagesSequentially(type) {
     const order = Number(window.USER_ORDER);
 
@@ -44,7 +40,7 @@ function revealMessagesSequentially(type) {
                 setTimeout(() => {
                     el.style.display = "block";
                     chatBox.prepend(el);
-                }, (index + 1) * 4000); // 4秒間隔で順次表示
+                }, (index + 1) * 4000);
             }
         });
 
@@ -71,7 +67,6 @@ function revealMessagesSequentially(type) {
 document.addEventListener("DOMContentLoaded", () => {
     const order = Number(window.USER_ORDER);
     
-    // 1. 通常メッセージ (No.1〜10) - 全員共通
     for (let i = 1; i <= 10; i++) {
         const msg = document.getElementById(`msg-${i}`);
         if (!msg) continue;
@@ -82,13 +77,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }, i * 3500);
     }
 
-    // 2. スペシャルメッセージ (No.11〜15) - 担当者のみ
-    // ユーザー3（order 2）の「しりとり文」はここに含まれる
     const specialMessages = [
         { id: "msg-11", order: 0, delay: 40000 },
         { id: "msg-12", order: 1, delay: 43000 },
-        { id: "msg-13", order: 2, delay: 46000 }, // ユーザー3
-        { id: "msg-14", order: 2, delay: 49000 }, // ユーザー3
+        { id: "msg-13", order: 2, delay: 46000 },
+        { id: "msg-14", order: 2, delay: 49000 },
         { id: "msg-15", order: 0, delay: 52000 },
     ];
 
@@ -105,25 +98,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-// --- WebSocket 受信 ---
 if (socket) {
     socket.onmessage = (e) => {
         const data = JSON.parse(e.data);
 
-        // A. 部屋削除 (404対策)
         if (data.type === "room_deleted") {
             window.location.replace("/");
             return;
         }
         
-        // B. 通常メッセージ表示
         if (!data.message) return;
         displayMessage(data);
 
         const rawMsg = data.message.trim().normalize("NFKC").replace(/\s+/g, "");
         const order = Number(window.USER_ORDER);
 
-        // C. キーワード判定
         if (rawMsg === "内申") {
             if (!window._trigger_内申) {
                 window._trigger_内申 = true;
@@ -137,7 +126,6 @@ if (socket) {
             }
         }
 
-        // D. ページ解放 & リンク
         if (rawMsg === "仕様書" && order === 0) {
             localStorage.setItem("a_unlocked", "true");
             window.open(`/a/${roomID}/`, "_blank");
@@ -159,17 +147,14 @@ function displayMessage(data) {
     const div = document.createElement("div");
     div.className = "message";
     
-    // サーバーからのタイムスタンプがあればそれを使用、なければ現在の時刻
     const date = data.timestamp ? new Date(data.timestamp) : new Date();
     
-    // 各パーツを取得
     const year = date.getFullYear();
-    const month = ("0" + (date.getMonth() + 1)).slice(-2); // 月は0から始まるので+1
+    const month = ("0" + (date.getMonth() + 1)).slice(-2);
     const day   = ("0" + date.getDate()).slice(-2);
     const hours = ("0" + date.getHours()).slice(-2);
     const minutes = ("0" + date.getMinutes()).slice(-2);
     
-    // 形式： 2026/01/15 15:00
     const formattedDateTime = `${year}/${month}/${day} ${hours}:${minutes}`;
     
     div.innerHTML = `

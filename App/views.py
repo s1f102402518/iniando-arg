@@ -11,10 +11,6 @@ import time
 
 from .models import Room, Entry
 
-# ==========================================
-# 共通ヘルパー関数
-# ==========================================
-
 def broadcast_lobby_update():
     """ロビー（募集一覧）に更新を通知する"""
     channel_layer = get_channel_layer()
@@ -27,30 +23,22 @@ def broadcast_lobby_update():
         }
     )
 
-# ==========================================
-# メインビュー
-# ==========================================
+
 
 def lobby(request):
     """ロビー画面の表示（検索機能付き）"""
     query = request.GET.get("q", "")
     
-    # 全ての部屋に現在の参加人数を付与
     all_rooms = Room.objects.annotate(num_players=Count("entries"))
 
-    # 「募集中の部屋」（3人未満）を抽出
     rooms = all_rooms.filter(num_players__lt=3)
 
-    # 検索処理（ID or 名前）
     if query:
         try:
-            # ID(UUID)の完全一致、または名前の部分一致
             rooms = rooms.filter(Q(id=query) | Q(name__icontains=query))
         except (ValueError, ValidationError):
-            # queryがUUID形式でない場合は名前検索のみ実行
             rooms = rooms.filter(name__icontains=query)
 
-    # 「自分が参加中の部屋」は人数に関わらず表示
     my_groups = all_rooms.filter(entries__nickname=request.user.username).order_by('-id')
 
     yesterday = timezone.now().date() - timedelta(days=1)
@@ -59,7 +47,7 @@ def lobby(request):
         "rooms": rooms,
         "my_groups": my_groups,
         "yesterday": yesterday,
-        "query": query,  # 検索窓に値を残すため
+        "query": query,
     })
 
 def room_detail(request, room_id):
@@ -73,18 +61,15 @@ def room_detail(request, room_id):
     members = room.entries.all()
     user_is_member = members.filter(nickname=current_username).exists()
     
-    # メンバー外、かつ満員の場合は弾く
     if not user_is_member and members.count() >= 3:
         return redirect("lobby") 
 
-    # 参加登録（既に参加してれば取得、なければ作成）
     entry, created = Entry.objects.get_or_create(
         room=room, 
         nickname=current_username
     )
     
     if created:
-        # 新しく参加した場合は、その部屋のチャットに通知
         channel_layer = get_channel_layer()
         room_group_name = f'chat_{room_id}' 
         async_to_sync(channel_layer.group_send)(
@@ -94,7 +79,6 @@ def room_detail(request, room_id):
                 'message': 'new member joined',
             }
         )
-        # 3人揃った（募集終了）タイミングでロビーを更新
         if room.entries.count() == 3:
             broadcast_lobby_update()
         
@@ -125,10 +109,6 @@ def thread(request, room_id):
     })
 
 
-# ==========================================
-# 操作アクション (POST/Redirect)
-# ==========================================
-
 def create_room(request):
     """新しい調査グループを作成"""
     if not request.user.is_authenticated:
@@ -139,7 +119,6 @@ def create_room(request):
         if not name:
             return redirect("lobby")
         
-        # 部屋作成と作成者の自動登録
         room = Room.objects.create(name=name)
         Entry.objects.create(room=room, nickname=request.user.username)
         
@@ -156,15 +135,12 @@ def leave_room(request, room_id):
         room = get_object_or_404(Room, id=room_id)
         current_username = request.user.username
 
-        # 部屋作成者（1人目）は基本退出できない（削除が必要）という仕様例
         host_entry = room.entries.first() 
         if host_entry and host_entry.nickname == current_username:
             return redirect("room_detail", room_id=room.id)
 
-        # 退出処理
         Entry.objects.filter(room=room, nickname=current_username).delete()
         
-        # 退出通知
         channel_layer = get_channel_layer()
         room_group_name = f'chat_{room_id}'
         async_to_sync(channel_layer.group_send)(
@@ -182,28 +158,18 @@ def delete_room(request, room_id):
     room = get_object_or_404(Room, id=room_id)
     room_group_name = f'chat_{room.id}'
     
-    # 1. まず参加者に解散信号を送信
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
         room_group_name,
         {
-            'type': 'room_deleted', # JavaScript側で判定する値
+            'type': 'room_deleted',
             'message': 'ROOM_DELETED_SIGNAL'
         }
     )
 
-    # 2. ロビー（募集一覧）の更新通知
     broadcast_lobby_update()
-
-    # 3. 最後にデータベースから削除
     room.delete()
-    
-    # 削除した本人はそのままロビーへ
     return redirect("lobby")
-
-# ==========================================
-# API (JavaScript用)
-# ==========================================
 
 def get_recruiting_rooms(request):
     """募集中の部屋リストをJSONで返す（リアルタイム更新用）"""
