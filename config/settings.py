@@ -25,6 +25,8 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     '.ngrok-free.app',
+    'iniando-arg.onrender.com',
+    '.onrender.com',
 ]
 
 INSTALLED_APPS = [
